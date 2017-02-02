@@ -16,34 +16,6 @@ void usage()
 }
 
 
-tcp::socket open_socket(Role role, boost::asio::io_service &io_service,
-                        std::string host, std::string port)
-{
-    tcp::socket socket(io_service);
-
-    switch (role)
-    {
-        case Role::server:
-            {
-                tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), std::stoi(port));
-                tcp::acceptor acceptor(socket.get_io_service(), endpoint);
-                acceptor.accept(socket);
-            }
-            break;
-
-        case Role::client:
-            {
-                tcp::resolver resolver(socket.get_io_service());
-                boost::asio::connect(socket, resolver.resolve({host, port}));
-            }
-            break;
-    }
-
-    return socket;
-}
-
-
-
 int main(int argc, char* argv[])
 {
     if (argc != 4)
@@ -72,8 +44,7 @@ int main(int argc, char* argv[])
 
     try
     {
-        tcp::socket socket(open_socket(role, io_service, address, port));
-        TCPConnection connection(std::move(socket));
+        TCPConnection connection(TCPConnection::from_role(role, io_service, address, port));
         Game game(role, UserInterface::Type::ncurses, connection);
 
         game.run();
