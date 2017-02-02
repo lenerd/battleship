@@ -2,6 +2,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include "tcp_connection.hpp"
 #include "game.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
@@ -72,7 +73,8 @@ int main(int argc, char* argv[])
     try
     {
         tcp::socket socket(open_socket(role, io_service, address, port));
-        Game game(role, UserInterface::Type::ncurses, socket);
+        TCPConnection connection(std::move(socket));
+        Game game(role, UserInterface::Type::ncurses, connection);
 
         game.run();
     }

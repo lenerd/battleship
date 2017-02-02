@@ -2,13 +2,11 @@
 #define GAME_H
 
 #include <memory>
-#include <boost/asio/ip/tcp.hpp>
 #include "board.hpp"
 #include "user_interface.hpp"
 
-using boost::asio::ip::tcp;
-
 enum class Role;
+class Connection;
 
 
 class Game
@@ -31,7 +29,7 @@ public:
         abort,
         end,
     };
-    Game(Role role, UserInterface::Type ui_type, tcp::socket &socket);
+    Game(Role role, UserInterface::Type ui_type, Connection &connection);
     ~Game();
     void run();
 
@@ -56,7 +54,7 @@ private:
     std::unique_ptr<Board> board_local_;
     std::unique_ptr<Board> board_remote_;
     std::unique_ptr<UserInterface> ui_;
-    tcp::socket &socket_;
+    Connection &connection_;
 };
 
 #endif // GAME_H

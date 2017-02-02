@@ -1,19 +1,18 @@
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
-#include <boost/asio/ip/tcp.hpp>
+#include "connection.hpp"
 #include "game.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
 
-using boost::asio::ip::tcp;
 
-Game::Game(Role role, UserInterface::Type ui_type, tcp::socket &socket)
+Game::Game(Role role, UserInterface::Type ui_type, Connection &connection)
     : role_(role), state_(State::initial),
       board_local_(std::make_unique<Board>()),
       board_remote_(std::make_unique<Board>()),
       ui_(make_userinterface(ui_type, *board_local_, *board_remote_)),
-      socket_(socket)
+      connection_(connection)
 {
     ui_->show();
 }
