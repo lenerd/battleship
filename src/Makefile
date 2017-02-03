@@ -10,7 +10,7 @@ GAME_OBJECTS=game.o board.o tcp_connection.o
 OBJECTS=util.o ${GAME_OBJECTS} ${UI_OBJECTS} ${CRYPTO_OBJECTS}
 TEST_OBJECTS=test_board.o test_commitment.o test_util.o
 
-.phony: clean commitment
+.phony: all clean
 
 
 all: battleship test
