@@ -6,10 +6,8 @@
 MessageWindow::MessageWindow(int starty, int startx, int height, int width)
     : NCursesWindow(starty, startx, height, width)
 {
-    assert(starty >= 0);
-    assert(startx >= 0);
-    assert(height >= 0);
-    assert(width >= 3); // used for "..."
+    if (width < 3) // used for "..."
+        throw std::out_of_range("MessageWindow too small");
 }
 
 MessageWindow::~MessageWindow()
@@ -50,7 +48,7 @@ void MessageWindow::update()
     std::advance(end, std::min(static_cast<size_t>(height_), messages_.size()));
     for (auto it = messages_.begin(); it != end; ++it)
     {
-        mvwaddstr(window_, it - messages_.begin(), 0, it->c_str());
+        addstring(static_cast<size_t>(it - messages_.begin()), 0, it->c_str());
     }
     wrefresh(window_);
 }
