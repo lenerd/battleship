@@ -10,7 +10,7 @@
 class Board
 {
 public:
-    static const int size = 10;
+    static const size_t size = 10;
     bool query(coords_t coords);
     void mark_queried(coords_t coords);
     bool is_queried(coords_t coords);
@@ -22,11 +22,11 @@ public:
     void debug();
     void draw(std::ostream& os);
 private:
-    int foo(coords_t coords);
-    coords_t bar(int n);
+    size_t coords_to_index(coords_t coords);
+    coords_t index_to_coords(size_t n);
     std::bitset<size*size> ships_;
     std::bitset<size*size> queried_;
-    bool committed_;
+    // bool committed_;
     std::vector<Commitment> commitments;
 };
 

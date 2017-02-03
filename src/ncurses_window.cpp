@@ -1,3 +1,4 @@
+#include <limits>
 #include <stdexcept>
 #include <ncurses.h>
 #include "ncurses_window.hpp"
@@ -20,4 +21,22 @@ NCursesWindow::~NCursesWindow()
 WINDOW* NCursesWindow::get_window()
 {
     return window_;
+}
+
+int NCursesWindow::addstring(size_t row, size_t col, const char *str)
+{
+    if (row > std::numeric_limits<int>::max() || col > std::numeric_limits<int>::max())
+    {
+        throw std::out_of_range("printw: index too large for ncurses");
+    }
+    return mvwaddstr(window_, static_cast<int>(row), static_cast<int>(col), str);
+}
+
+int NCursesWindow::addchar(size_t row, size_t col, char ch)
+{
+    if (row > std::numeric_limits<int>::max() || col > std::numeric_limits<int>::max())
+    {
+        throw std::out_of_range("printw: index too large for ncurses");
+    }
+    return mvwaddch(window_, static_cast<int>(row), static_cast<int>(col), ch);
 }

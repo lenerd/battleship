@@ -44,7 +44,8 @@ TCPConnection TCPConnection::listen(boost::asio::io_service& io_service,
         std::string address, std::string port)
 {
     tcp::socket socket(io_service);
-    tcp::endpoint endpoint(boost::asio::ip::address::from_string(address), std::stoi(port));
+    tcp::endpoint endpoint(boost::asio::ip::address::from_string(address),
+            static_cast<unsigned short>(std::stoi(port)));
     tcp::acceptor acceptor(socket.get_io_service(), endpoint);
     acceptor.accept(socket);
     return TCPConnection(std::move(socket));

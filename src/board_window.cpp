@@ -1,4 +1,7 @@
+#include <cassert>
 #include <iostream>
+#include <limits>
+#include <stdexcept>
 #include <ncurses.h>
 #include "board_window.hpp"
 
@@ -15,35 +18,39 @@ BoardWindow::~BoardWindow()
 
 void BoardWindow::draw_grid()
 {
-    size_t size = board_.size;
+    auto size{board_.size};
     for (size_t col = 0; col < size; ++col)
     {
-        mvwprintw(window_, 0, offset_left + cell_width*col + 2, "%c", '0' + col);
+        print(0, offset_left + cell_width*col + 2, "%c", '0' + col);
     }
     for (size_t row = 0; row < size; ++row)
     {
-        mvwprintw(window_, offset_top + cell_height*row+1, 0, "%c", 'A' + row);
+        print(offset_top + cell_height*row+1, 0, "%c", 'A' + row);
         for (size_t col = 0; col < size; ++col)
         {
-            mvwaddstr(window_, offset_top + cell_height*row, offset_left + cell_width*col, "----");
-            mvwaddstr(window_, offset_top + cell_height*row+1, 2 + cell_width*col, "|   ");
+            addstring(offset_top + cell_height*row, offset_left + cell_width*col, "----");
+            addstring(offset_top + cell_height*row+1, 2 + cell_width*col, "|   ");
         }
-        mvwaddch(window_, offset_top + cell_height*row, offset_left + cell_width*size, '-');
-        mvwaddch(window_, offset_top + cell_height*row+1, offset_left + cell_width*size, '|');
+        addchar(offset_top + cell_height*row, offset_left + cell_width*size, '-');
+        addchar(offset_top + cell_height*row+1, offset_left + cell_width*size, '|');
     }
     for (size_t col = 0; col < size; ++col)
     {
-        mvwaddstr(window_, offset_top + cell_height*size, offset_left + cell_width*col, "----");
+        addstring(offset_top + cell_height*size, offset_left + cell_width*col, "----");
     }
-    mvwaddch(window_, offset_top + cell_height*size, offset_left + cell_width*size, '-');
-    // box(window_, 0, 0);
+    addchar(offset_top + cell_height*size, offset_left + cell_width*size, '-');
     wrefresh(window_);
 }
 
-std::pair<int, int> BoardWindow::idx2win(int row, int col) const
+std::pair<int, int> BoardWindow::idx2win(size_t row, size_t col) const
 {
-    return {offset_top + cell_height * row + 1,
-            offset_left + cell_width * col + 2};
+    size_t win_row{offset_top + cell_height * row + 1};
+    size_t win_col{offset_left + cell_width * col + 2};
+    if (win_row > std::numeric_limits<int>::max() || win_col > std::numeric_limits<int>::max())
+    {
+        throw std::out_of_range("idx2win: index too large for ncurses");
+    }
+    return {static_cast<int>(win_row), static_cast<int>(win_col)};
 }
 
 int BoardWindow::get_height() const
@@ -56,7 +63,7 @@ int BoardWindow::get_width() const
     return width_;
 }
 
-char BoardWindow::get_char(int row, int col) const
+char BoardWindow::get_char(size_t row, size_t col) const
 {
     if (board_.get({row, col}))
     {
@@ -82,19 +89,19 @@ char BoardWindow::get_char(int row, int col) const
     }
 }
 
-void BoardWindow::cursor_draw(int row, int col)
+void BoardWindow::cursor_draw(size_t row, size_t col)
 {
     wattron(window_, A_REVERSE);
     update_position(row, col);
     wattroff(window_, A_REVERSE);
 }
 
-void BoardWindow::cursor_remove(int row, int col)
+void BoardWindow::cursor_remove(size_t row, size_t col)
 {
     update_position(row, col);
 }
 
-void BoardWindow::cursor_update(int row, int col)
+void BoardWindow::cursor_update(size_t row, size_t col)
 {
     std::cerr << board_.size << '\n';
     std::cerr << cursor_y_ << "," << cursor_x_
@@ -153,14 +160,14 @@ void BoardWindow::cursor_right()
     cursor_update(cursor_y_, (cursor_x_ + 1) % board_.size);
 }
 
-void BoardWindow::update_position(int row, int col)
+void BoardWindow::update_position(size_t row, size_t col)
 {
     auto window_pos = idx2win(row, col);
     mvwaddch(window_, window_pos.first, window_pos.second, get_char(row, col));
     wrefresh(window_);
 }
 
-void BoardWindow::toggle_position(int row, int col)
+void BoardWindow::toggle_position(size_t row, size_t col)
 {
     board_.flip({row, col});
 

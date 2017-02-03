@@ -1,5 +1,5 @@
 CXX=clang++
-WARNINGS=-Wall -Wextra
+WARNINGS=-Wall -Wextra -Wconversion
 CXXFLAGS=${WARNINGS} -std=c++14 -O0 -ggdb
 LIBS=-lncurses -lboost_system -lpthread -lcryptopp
 TEST_LIBS=-lgtest -lgtest_main
@@ -18,7 +18,7 @@ all: battleship test
 battleship: battleship.o ${OBJECTS}
 	${CXX} -o $@ ${CXXFLAGS} $^ ${LIBS}
 
-game_screen: test_game_screen.o ${UI_OBJECTS}
+game_screen: test_game_screen.o ${UI_OBJECTS} ${GAME_OBJECTS}
 	${CXX} -o $@ ${CXXFLAGS} $^ ${LIBS}
 
 test: test.o ${OBJECTS} ${TEST_OBJECTS}

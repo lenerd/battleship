@@ -1,12 +1,12 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+#include <cstddef>
 #include <cstdint>
-#include <fstream>
 #include <vector>
 
 using bytes_t = std::vector<uint8_t>;
-using coords_t = std::pair<int, int>;
+using coords_t = std::pair<size_t, size_t>;
 
 enum class Role
 {
