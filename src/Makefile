@@ -1,5 +1,5 @@
 CXX=clang++
-WARNINGS=-Wall -Wextra -Wconversion
+WARNINGS=-Wall -Wextra -Wconversion -Wshadow -Weffc++
 CXXFLAGS=${WARNINGS} -std=c++14 -O0 -ggdb
 LIBS=-lncurses -lboost_system -lpthread -lcryptopp
 TEST_LIBS=-lgtest -lgtest_main
