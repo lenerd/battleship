@@ -6,8 +6,9 @@ TEST_LIBS=-lgtest -lgtest_main
 
 UI_OBJECTS=user_interface.o ncurses_interface.o config_screen.o game_screen.o ncurses_window.o message_window.o board_window.o
 CRYPTO_OBJECTS=commitment.o
-GAME_OBJECTS=game.o board.o tcp_connection.o
-OBJECTS=util.o ${GAME_OBJECTS} ${UI_OBJECTS} ${CRYPTO_OBJECTS}
+NETWORK_OBJECTS=stream_connection.o tcp_connection.o
+GAME_OBJECTS=game.o board.o
+OBJECTS=util.o ${GAME_OBJECTS} ${UI_OBJECTS} ${CRYPTO_OBJECTS} ${NETWORK_OBJECTS}
 TEST_OBJECTS=test_board.o test_commitment.o test_util.o
 
 .phony: all clean
@@ -21,15 +22,25 @@ battleship: battleship.o ${OBJECTS}
 game_screen: test_game_screen.o ${UI_OBJECTS} ${GAME_OBJECTS}
 	${CXX} -o $@ ${CXXFLAGS} $^ ${LIBS}
 
+test_tcp: test_tcp.o ${NETWORK_OBJECTS}
+	${CXX} -o $@ ${CXXFLAGS} $^ ${LIBS}
+
 test: test.o ${OBJECTS} ${TEST_OBJECTS}
 	${CXX} -o $@ ${CXXFLAGS} $^ ${LIBS} ${TEST_LIBS}
 
 runtest: test
 	./test
 
+stream_connection.o: stream_connection.cpp message_generated.h
+	${CXX} ${CXXFLAGS} -c $<
+
 %.o: %.cpp
 	${CXX} ${CXXFLAGS} -c $^
+
+%_generated.h: %.fbs
+	flatc --cpp --scoped-enums $^
 
 clean:
 	rm -f *.o
 	rm -f test battleship game_screen
+	rm -f *_generated.h
