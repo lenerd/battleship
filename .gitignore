@@ -31,5 +31,8 @@
 *.out
 *.app
 
+# Flatbuffers Generated Headers
+*_generated.h
+
 # Misc
 .gdb_history
