@@ -21,10 +21,9 @@ public:
         commitments_received,
         ready,
         turn,
-        wait_for_answer,
-        answer_received,
+        query_phase,
+        answer_phase,
         cheating_detected,
-        wait_for_query,
         end_of_game,
         abort,
         end,
@@ -42,9 +41,8 @@ public:
     void handle_ready();
 
     // game
-    void handle_turn();
-    void handle_wait_for_query();
-    void handle_wait_for_answer();
+    void handle_query_phase();
+    void handle_answer_phase();
 
     // end of game
     void handle_end();
@@ -55,6 +53,7 @@ private:
     std::unique_ptr<Board> board_remote_;
     std::unique_ptr<UserInterface> ui_;
     Connection &connection_;
+    bool won_;
 };
 
 #endif // GAME_H

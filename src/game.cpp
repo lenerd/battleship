@@ -1,4 +1,5 @@
 #include <cassert>
+#include <functional>
 #include <iostream>
 #include <stdexcept>
 #include "connection.hpp"
@@ -23,7 +24,6 @@ Game::~Game()
 
 void Game::run()
 {
-    // return;
     while (state_ != State::end)
     {
         switch (state_)
@@ -46,19 +46,17 @@ void Game::run()
             case State::ready:
                 handle_ready();
                 break;
-            case State::turn:
-                handle_turn();
+            case State::query_phase:
+                handle_query_phase();
                 break;
-            case State::wait_for_query:
-                handle_wait_for_query();
-                break;
-            case State::wait_for_answer:
-                handle_wait_for_answer();
+            case State::answer_phase:
+                handle_answer_phase();
                 break;
             default:
                 throw std::logic_error("unknown state");
         }
     }
+    handle_end();
 }
 
 void Game::handle_initial()
@@ -118,29 +116,65 @@ void Game::handle_ready()
 {
     assert(state_ == State::ready);
     std::cerr << "state: ready\n";
-    state_ = State::end;
-}
-void Game::handle_turn()
-{
-    // ask ui for query
-    // send query
-    state_ = State::wait_for_answer;
+    if (role_ == Role::server)
+        state_ = State::query_phase;
+    else
+        state_ = State::answer_phase;
 }
 
-void Game::handle_wait_for_query()
+void Game::handle_query_phase()
 {
-    assert(state_ == State::wait_for_query);
-    // recv query
-    // send answer
-    // check for end of game
-    state_ = State::turn;
+    assert(state_ == State::query_phase);
+    std::cerr << "state: query_phase\n";
+
+    ui_->post_message("select position");
+    auto coords{ui_->select_position()};
+    auto answer{connection_.query_position(coords)};
+    board_remote_->set_queried(coords, answer);
+    if (board_remote_->num_ships_hit() < 3)
+    {
+        state_ = State::answer_phase;
+    }
+    else
+    {
+        won_ = true;
+        state_ = State::end;
+    }
 }
 
-void Game::handle_wait_for_answer()
+void Game::handle_answer_phase()
 {
-    assert(state_ == State::wait_for_answer);
-    // recv answer
-    // display answer
-    // check for end of game
-    state_ = State::wait_for_query;
+    assert(state_ == State::answer_phase);
+    std::cerr << "state: answer_phase\n";
+
+    ui_->post_message("answering position");
+    connection_.answer_query([this] (coords_t coords)
+        {
+            return this->board_local_->query(coords);
+        });
+    if (board_local_->ships_alive())
+    {
+        state_ = State::query_phase;
+    }
+    else
+    {
+        won_ = false;
+        state_ = State::end;
+    }
+}
+
+void Game::handle_end()
+{
+    assert(state_ == State::end);
+    std::cerr << "state: end\n";
+
+    if (won_)
+    {
+        ui_->post_message("You won: you destroyed all enemy ships");
+    }
+    else
+    {
+        ui_->post_message("You lost: all your ships are destroyed");
+    }
+    ui_->wait_for_quit();
 }
