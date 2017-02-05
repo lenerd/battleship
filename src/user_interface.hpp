@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include "util.hpp"
 
 class Board;
 
@@ -18,8 +19,9 @@ public:
     virtual ~UserInterface();
     virtual void show() = 0;
     virtual void place_ships() = 0;
-    virtual void select_position() = 0;
+    virtual coords_t select_position() = 0;
     virtual void post_message(std::string message) = 0;
+    virtual void wait_for_quit() = 0;
 protected:
     Board &board_local_;
     Board &board_remote_;

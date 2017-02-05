@@ -36,3 +36,8 @@ void GameScreen::place_ships()
 {
     bw_local_->place_ships();
 }
+
+coords_t GameScreen::select_position()
+{
+    return bw_remote_->select_position();
+}

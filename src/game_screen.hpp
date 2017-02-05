@@ -17,6 +17,7 @@ public:
     void handle();
     void post_message(std::string message);
     void place_ships();
+    coords_t select_position();
 private:
     Board& board_local_;
     Board& board_remote_;

@@ -16,8 +16,9 @@ public:
     ~NCursesInterface();
     void show();
     void place_ships();
-    void select_position();
+    coords_t select_position();
     void post_message(std::string message);
+    void wait_for_quit();
 private:
     // std::unique_ptr<ConfigScreen> config_screen_;
     std::unique_ptr<GameScreen> game_screen_;

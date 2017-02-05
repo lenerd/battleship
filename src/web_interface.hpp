@@ -19,8 +19,9 @@ public:
     ~WebInterface();
     void show();
     void place_ships();
-    void select_position();
+    coords_t select_position();
     void post_message(std::string message);
+    void wait_for_quit();
 private:
 };
 

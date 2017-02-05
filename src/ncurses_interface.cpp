@@ -29,11 +29,19 @@ void NCursesInterface::place_ships()
     game_screen_->place_ships();
 }
 
-void NCursesInterface::select_position()
+coords_t NCursesInterface::select_position()
 {
+    return game_screen_->select_position();
 }
 
 void NCursesInterface::post_message(std::string message)
 {
     game_screen_->post_message(message);
+}
+
+void NCursesInterface::wait_for_quit()
+{
+    post_message("press 'q' to quit");
+    int ch;
+    while ((ch = std::cin.get()) != 'q');
 }
