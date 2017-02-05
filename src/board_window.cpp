@@ -9,6 +9,7 @@ BoardWindow::BoardWindow(int starty, int startx, Board& board)
     : NCursesWindow(starty, startx, 1 + 2 * board.size + 1, 2 + 4 * board.size + 1),
       board_(board), cursor_y_(0), cursor_x_(0)
 {
+    board_.signal_updated_position.connect([this] (coords_t coords) { this->update_position(coords.first, coords.second); });
 }
 
 BoardWindow::~BoardWindow()
@@ -42,15 +43,11 @@ void BoardWindow::draw_grid()
     wrefresh(window_);
 }
 
-std::pair<int, int> BoardWindow::idx2win(size_t row, size_t col) const
+std::pair<size_t, size_t> BoardWindow::index_to_win(size_t row, size_t col) const
 {
     size_t win_row{offset_top + cell_height * row + 1};
     size_t win_col{offset_left + cell_width * col + 2};
-    if (win_row > std::numeric_limits<int>::max() || win_col > std::numeric_limits<int>::max())
-    {
-        throw std::out_of_range("idx2win: index too large for ncurses");
-    }
-    return {static_cast<int>(win_row), static_cast<int>(win_col)};
+    return {win_row, win_col};
 }
 
 int BoardWindow::get_height() const
@@ -89,42 +86,29 @@ char BoardWindow::get_char(size_t row, size_t col) const
     }
 }
 
-void BoardWindow::cursor_draw(size_t row, size_t col)
-{
-    wattron(window_, A_REVERSE);
-    update_position(row, col);
-    wattroff(window_, A_REVERSE);
-}
-
-void BoardWindow::cursor_remove(size_t row, size_t col)
-{
-    update_position(row, col);
-}
-
 void BoardWindow::cursor_update(size_t row, size_t col)
 {
     std::cerr << board_.size << '\n';
     std::cerr << cursor_y_ << "," << cursor_x_
         << " -> " << row << "," << col << "\n";
-    if (display_cursor_)
-    {
-        cursor_remove(cursor_y_, cursor_x_);
-        cursor_draw(row, col);
-    }
+    auto old_y{cursor_y_};
+    auto old_x{cursor_x_};
     cursor_y_ = row;
     cursor_x_ = col;
+    update_position(old_y, old_x);
+    update_position(row, col);
 }
 
 void BoardWindow::cursor_show()
 {
     display_cursor_ = true;
-    cursor_draw(cursor_y_, cursor_x_);
+    update_position(cursor_y_, cursor_x_);
 }
 
 void BoardWindow::cursor_hide()
 {
     display_cursor_ = false;
-    cursor_remove(cursor_y_, cursor_x_);
+    update_position(cursor_y_, cursor_x_);
 }
 
 bool BoardWindow::cursor_toggle()
@@ -162,22 +146,23 @@ void BoardWindow::cursor_right()
 
 void BoardWindow::update_position(size_t row, size_t col)
 {
-    auto window_pos = idx2win(row, col);
-    mvwaddch(window_, window_pos.first, window_pos.second, get_char(row, col));
+    auto window_pos = index_to_win(row, col);
+    auto draw_cursor{display_cursor_ && cursor_y_ == row && cursor_x_ == col};
+
+    if (draw_cursor)
+        wattron(window_, A_REVERSE);
+
+    addchar(window_pos.first, window_pos.second, get_char(row, col));
+
+    if (draw_cursor)
+        wattroff(window_, A_REVERSE);
+
     wrefresh(window_);
 }
 
 void BoardWindow::toggle_position(size_t row, size_t col)
 {
     board_.flip({row, col});
-
-    if (cursor_y_ == row && cursor_x_ == col)
-        wattron(window_, A_REVERSE);
-
-    update_position(row, col);
-
-    if (cursor_y_ == row && cursor_x_ == col)
-        wattroff(window_, A_REVERSE);
 }
 
 void BoardWindow::place_ships()

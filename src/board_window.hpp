@@ -14,7 +14,7 @@ public:
     BoardWindow(int starty, int startx, Board& board);
     ~BoardWindow();
     void draw_grid();
-    std::pair<int, int> idx2win(size_t row, size_t col) const;
+    std::pair<size_t, size_t> index_to_win(size_t row, size_t col) const;
     int get_height() const;
     int get_width() const;
 
@@ -27,8 +27,6 @@ public:
 
     bool cursor_toggle();
     void cursor_update(size_t row, size_t col);
-    void cursor_draw(size_t row, size_t col);
-    void cursor_remove(size_t row, size_t col);
     void cursor_show();
     void cursor_hide();
     void update_position(size_t row, size_t col);

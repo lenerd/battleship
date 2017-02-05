@@ -4,13 +4,24 @@
 bool Board::query(coords_t coords)
 {
     mark_queried(coords);
-    return get(coords);
+    auto value{get(coords)};
+    signal_updated_position(coords);
+    return value;
+}
+
+void Board::set_queried(coords_t coords, bool value)
+{
+    set(coords, value);
+    mark_queried(coords);
+    signal_updated_position(coords);
 }
 
 void Board::mark_queried(coords_t coords)
 {
     queried_.set(coords_to_index(coords));
+    signal_updated_position(coords);
 }
+
 
 bool Board::is_queried(coords_t coords)
 {
@@ -22,23 +33,27 @@ bool Board::get(coords_t coords)
     return ships_.test(coords_to_index(coords));
 }
 
-void Board::set(coords_t coords)
+void Board::set(coords_t coords, bool value)
 {
-    ships_.set(coords_to_index(coords));
+    ships_.set(coords_to_index(coords), value);
+    signal_updated_position(coords);
 }
 
 void Board::reset(coords_t coords)
 {
     Board::ships_.reset(coords_to_index(coords));
+    signal_updated_position(coords);
 }
 
 void Board::flip(coords_t coords)
 {
     ships_.flip(coords_to_index(coords));
+    signal_updated_position(coords);
 }
 
 void Board::commit()
 {
+    throw std::logic_error("Board::commit not implemented");
 }
 
 void Board::debug()
@@ -66,4 +81,14 @@ size_t Board::coords_to_index(coords_t coords)
 coords_t Board::index_to_coords(size_t n)
 {
     return {n / size, n % size};
+}
+
+bool Board::ships_alive()
+{
+    return (ships_ & ~queried_).any();
+}
+
+size_t Board::num_ships_hit()
+{
+    return (ships_ & queried_).count();
 }
