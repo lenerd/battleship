@@ -12,7 +12,9 @@ public:
 
     std::string recv_message();
     void send_message(std::string data);
+    void accept();
 private:
+    uint16_t port_;
     struct WebSocketConnectionImpl;
     std::unique_ptr<WebSocketConnectionImpl> pImpl;
 };

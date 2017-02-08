@@ -1,8 +1,14 @@
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <unistd.h>
 #include <signal.h>
+#include <json.hpp>
+#include "board.hpp"
 #include "web_interface.hpp"
 #include "websocket_connection.hpp"
+
+using nlohmann::json;
 
 
 struct WebInterface::WebInterfaceImpl
@@ -13,12 +19,15 @@ struct WebInterface::WebInterfaceImpl
 };
 
 WebInterface::WebInterface(Board &board_local, Board &board_remote,
-        uint16_t ws_port)
+        uint16_t http_port, uint16_t ws_port)
         : UserInterface(board_local, board_remote),
+        http_port(http_port), ws_port(ws_port),
         pImpl(std::make_unique<WebInterfaceImpl>())
 {
     // start webserver
     start_webserver();
+    std::cout << "Please open your webbrowser on http://localhost:"
+        << http_port << "/?" << ws_port << std::endl;
     try
     {
         // open websocket
@@ -29,6 +38,14 @@ WebInterface::WebInterface(Board &board_local, Board &board_remote,
         std::cerr << "Exception: " << e.what() << "\n";
         kill_webserver();
     }
+    board_local_.signal_updated_position.connect([this] (coords_t coords)
+        {
+            this->update_position("local", coords.first, coords.second);
+        });
+    board_remote_.signal_updated_position.connect([this] (coords_t coords)
+        {
+            this->update_position("remote", coords.first, coords.second);
+        });
 }
 
 
@@ -46,27 +63,97 @@ void WebInterface::show()
 
 void WebInterface::place_ships()
 {
-    throw std::logic_error("WebInterface::place_ships not implemented");
+    try
+    {
+        board_local_.debug();
+        while (true)
+        {
+            auto data{pImpl->ws_conn->recv_message()};
+            auto message{json::parse(data)};
+            if (message["type"] == "toggle_position")
+            {
+                coords_t coords{message["row"], message["col"]};
+                board_local_.flip(coords);
+            }
+            else if (message["type"] == "submit_board")
+            {
+                break;
+            }
+            else
+            {
+                std::cerr << "ignoring message: " << data << "\n";
+            }
+            board_local_.debug();
+        }
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << "WebInterface::place_ships: " << e.what() << "\n";
+    }
 }
 
 coords_t WebInterface::select_position()
 {
-    throw std::logic_error("WebInterface::select_position not implemented");
+    try
+    {
+        switch_state("query_phase");
+        auto data{pImpl->ws_conn->recv_message()};
+        auto message{json::parse(data)};
+        if (message["type"] == "query")
+        {
+            return {message["row"], message["col"]};
+        }
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << "WebInterface::place_ships: " << e.what() << "\n";
+        throw "foobar";
+    }
+    throw std::logic_error("do something");
 }
 
-void WebInterface::post_message(std::string)
+void WebInterface::switch_state(std::string state)
 {
-    throw std::logic_error("WebInterface::post_message not implemented");
+    json j;
+    j["type"] = "switch_state";
+    j["state"] = state;
+    pImpl->ws_conn->send_message(j.dump());
+}
+
+void WebInterface::post_message(std::string message)
+{
+    json j;
+    j["type"] = "message";
+    j["message"] = message;
+    pImpl->ws_conn->send_message(j.dump());
 }
 
 void WebInterface::wait_for_quit()
 {
-    throw std::logic_error("WebInterface::wait_for_quit not implemented");
+    return;
 }
 
-void WebInterface::init_websocket()
+void WebInterface::update_position(std::string board, size_t row, size_t col)
 {
+    assert(board == "local" || board == "remote");
+    json j;
+    j["type"] = "update_position";
+    j["board"] = board;
+    j["row"] = row;
+    j["col"] = col;
+    if (board == "local")
+    {
+        j["ship"] = board_local_.get({row, col});
+        j["queried"] = board_local_.is_queried({row, col});
+    }
+    else if (board == "remote")
+    {
+        j["ship"] = board_remote_.get({row, col});
+        j["queried"] = board_remote_.is_queried({row, col});
+    }
+    pImpl->ws_conn->send_message(j.dump());
 }
+
 
 void WebInterface::start_webserver()
 {
@@ -74,8 +161,9 @@ void WebInterface::start_webserver()
     auto child_pid = fork();
     if (child_pid == 0) // child
     {
+        auto port{std::to_string(http_port)};
         chdir("./web");
-        const char* const args[] = {"/usr/bin/python", "-m", "http.server", "-b", "127.0.0.1", "1339", nullptr};
+        const char* const args[] = {"/usr/bin/python", "-m", "http.server", "-b", "127.0.0.1", port.c_str(), nullptr};
         execv("/usr/bin/python", const_cast<char**const>(args));
         throw std::runtime_error("shouldn't happen");
     }
@@ -96,5 +184,14 @@ void WebInterface::kill_webserver()
 
 void WebInterface::start_webbrowser()
 {
-    system("python -m webbrowser -t \"http://localhost:1339\"");
+    throw std::logic_error("FIXME: start_webbrowser");
+    std::stringstream ss;
+    ss << "python -m webbrowser -t \"http://localhost:"
+       << http_port
+       << "?"
+       << ws_port
+       << "\"";
+    auto cmd{ss.str()};
+    std::cerr << "system(" << cmd << ");" << "\n";
+    system(cmd.c_str());
 }

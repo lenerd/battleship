@@ -13,7 +13,7 @@ class WebInterface : public UserInterface
 {
 public:
     WebInterface(Board &board_local, Board &board_remote,
-            uint16_t ws_port = 1338);
+            uint16_t http_port, uint16_t ws_port);
     ~WebInterface();
     void show();
     void place_ships();
@@ -21,15 +21,18 @@ public:
     void post_message(std::string message);
     void wait_for_quit();
 
+    void update_position(std::string board, size_t row, size_t col);
+    void switch_state(std::string state);
+
     void start_webserver();
     void kill_webserver();
     void start_webbrowser();
-    static const uint16_t http_port = 1339;
+    uint16_t http_port;
+    uint16_t ws_port;
 private:
     struct WebInterfaceImpl;
     std::unique_ptr<WebInterfaceImpl> pImpl;
 
-    void init_websocket();
     pid_t webserver_pid;
 };
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/starter-template.css" rel="stylesheet">
+
+    <link href="css/battleship.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand">Battleship</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <div class="row">
+
+        <div id="local" class="board-container col-sm-6">
+          <h2>Local</h2>
+          <div id="board-local" class="board">
+          </div>
+          <button type="button" id="submission-button">Submit</button>
+        </div>
+
+        <div id="remote" class="col-sm-6 board-container">
+          <h2>Remote</h2>
+          <div id="board-remote" class="board">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div id="msg_box">
+        </div>
+      </div>
+
+
+
+    </div><!-- /.container -->
+
+    <script src="js/battleship.js"></script>
+  </body>
+</html>

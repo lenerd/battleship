@@ -1,0 +1,43 @@
+@media (min-width: 450px)
+{
+    .col-sm-6
+    {
+        width: 50%;
+        float: left;
+    }
+}
+
+.container
+{
+    /* background-color: blue; */
+}
+
+
+.board-container
+{
+    max-width: 20em;
+    margin: 0 auto;
+    text-align: center;
+}
+
+table.board
+{
+    margin: 0px auto;
+    border-collapse: collapse;
+}
+
+.board td
+{
+    width: 1.5em;
+    height: 1.5em;
+}
+
+td.board-cell
+{
+    border: 1px solid black;
+}
+
+.board
+{
+    text-align: center;
+}

@@ -17,15 +17,16 @@ struct WebSocketConnection::WebSocketConnectionImpl
     boost::asio::io_service io_service;
     websocket_t ws;
 
-    static websocket_t init_websocket(boost::asio::io_service &io_service, uint16_t port);
+    static websocket_t websocket_accept(boost::asio::io_service &io_service, uint16_t port);
 };
 
-websocket_t WebSocketConnection::WebSocketConnectionImpl::init_websocket(
+websocket_t WebSocketConnection::WebSocketConnectionImpl::websocket_accept(
         boost::asio::io_service &io_service, uint16_t port)
 {
     tcp::socket socket{io_service};
     tcp::endpoint endpoint{ boost::asio::ip::address::from_string("127.0.0.1"), port};
     tcp::acceptor acceptor{socket.get_io_service(), endpoint};
+    std::cerr << "Waiting for connection on websocket\n";
     acceptor.accept(socket);
     websocket_t ws{std::move(socket)};;
     ws.accept();
@@ -34,20 +35,23 @@ websocket_t WebSocketConnection::WebSocketConnectionImpl::init_websocket(
 }
 
 WebSocketConnection::WebSocketConnectionImpl::WebSocketConnectionImpl(uint16_t port)
-    : ws(init_websocket(io_service, port))
+    : ws(websocket_accept(io_service, port))
 {
 }
 
 
 WebSocketConnection::WebSocketConnection(uint16_t port)
-    : pImpl(std::make_unique<WebSocketConnectionImpl>(port))
+    : port_(port),
+    pImpl(std::make_unique<WebSocketConnectionImpl>(port_))
 {
 }
+
 
 WebSocketConnection::~WebSocketConnection() = default;
 
 void WebSocketConnection::send_message(std::string data)
 {
+    std::cerr << "WebSocketConnection::send_message " << data << "\n";
     auto buffer{boost::asio::buffer(data)};
     pImpl->ws.write(buffer);
 }
@@ -58,5 +62,7 @@ std::string WebSocketConnection::recv_message()
     beast::streambuf buffer;
     websocket::opcode op;
     pImpl->ws.read(op, buffer);
-    return beast::to_string(buffer.data());
+    auto data{beast::to_string(buffer.data())};
+    std::cerr << "WebSocketConnection::recv_message " << data << "\n";
+    return data;
 }
