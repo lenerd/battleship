@@ -4,15 +4,16 @@
 #include <stdexcept>
 #include "connection.hpp"
 #include "game.hpp"
+#include "options.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
 
 
-Game::Game(Role role, UserInterface::Type ui_type, Connection &connection)
+Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Connection &connection)
     : role_(role), state_(State::initial),
       board_local_(std::make_unique<Board>()),
       board_remote_(std::make_unique<Board>()),
-      ui_(make_userinterface(ui_type, *board_local_, *board_remote_)),
+      ui_(ui_factory.make(ui_type, *board_local_, *board_remote_)),
       connection_(connection)
 {
     ui_->show();

@@ -3,10 +3,12 @@
 
 #include <memory>
 #include "board.hpp"
-#include "user_interface.hpp"
+#include "options.hpp"
 
 enum class Role;
 class Connection;
+class UserInterface;
+class UIFactory;
 
 
 class Game
@@ -28,7 +30,7 @@ public:
         abort,
         end,
     };
-    Game(Role role, UserInterface::Type ui_type, Connection &connection);
+    Game(Role role, const UIFactory &ui_factory, UIType ui_type, Connection &connection);
     ~Game();
     void run();
 

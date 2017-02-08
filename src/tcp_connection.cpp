@@ -1,5 +1,6 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include "options.hpp"
 #include "tcp_connection.hpp"
 
 using boost::asio::ip::tcp;
@@ -16,7 +17,7 @@ TCPConnection::TCPConnection(tcp::socket socket)
 
 
 TCPConnection TCPConnection::from_role(Role role, boost::asio::io_service &io_service,
-        std::string address, std::string port)
+        std::string address, uint16_t port)
 {
     switch (role)
     {
@@ -28,20 +29,19 @@ TCPConnection TCPConnection::from_role(Role role, boost::asio::io_service &io_se
 }
 
 TCPConnection TCPConnection::connect(boost::asio::io_service &io_service,
-        std::string address, std::string port)
+        std::string address, uint16_t port)
 {
     tcp::socket socket(io_service);
     tcp::resolver resolver(socket.get_io_service());
-    boost::asio::connect(socket, resolver.resolve({address, port}));
+    boost::asio::connect(socket, resolver.resolve({address, std::to_string(port)}));
     return TCPConnection(std::move(socket));
 }
 
 TCPConnection TCPConnection::listen(boost::asio::io_service& io_service,
-        std::string address, std::string port)
+        std::string address, uint16_t port)
 {
     tcp::socket socket(io_service);
-    tcp::endpoint endpoint(boost::asio::ip::address::from_string(address),
-            static_cast<unsigned short>(std::stoi(port)));
+    tcp::endpoint endpoint(boost::asio::ip::address::from_string(address), port);
     tcp::acceptor acceptor(socket.get_io_service(), endpoint);
     acceptor.accept(socket);
     return TCPConnection(std::move(socket));

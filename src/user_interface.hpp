@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include "options.hpp"
 #include "util.hpp"
 
 class Board;
@@ -10,11 +11,6 @@ class Board;
 class UserInterface
 {
 public:
-    enum class Type
-    {
-        ncurses,
-        web,
-    };
     UserInterface(Board &board_local, Board &board_remote);
     virtual ~UserInterface();
     virtual void show() = 0;
@@ -28,6 +24,16 @@ protected:
 };
 
 
-std::unique_ptr<UserInterface> make_userinterface(UserInterface::Type type, Board &board_local, Board &board_remote);
+class UIFactory
+{
+public:
+    UIFactory(uint16_t http_port, uint16_t ws_port);
+    ~UIFactory() = default;
+    std::unique_ptr<UserInterface> make(UIType type,
+            Board &board_local, Board &board_remote) const;
+private:
+    uint16_t http_port_;
+    uint16_t ws_port_;
+};
 
 #endif // USER_INTERFACE_HPP

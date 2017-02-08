@@ -4,6 +4,8 @@
 #include <boost/asio/ip/tcp.hpp>
 #include "stream_connection.hpp"
 
+enum class Role;
+
 class TCPConnection : public StreamConnection
 {
 public:
@@ -11,11 +13,11 @@ public:
     ~TCPConnection() = default;
 
     static TCPConnection from_role(Role role, boost::asio::io_service &io_service,
-        std::string address, std::string port);
+        std::string address, uint16_t port);
     static TCPConnection connect(boost::asio::io_service& io_service,
-            std::string address, std::string port);
+            std::string address, uint16_t port);
     static TCPConnection listen(boost::asio::io_service& io_service,
-            std::string address, std::string port);
+            std::string address, uint16_t port);
 
 protected:
     void send_message(uint8_t* buffer, size_t length) override;
