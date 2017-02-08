@@ -1,0 +1,26 @@
+namespace fbs;
+
+table Query
+{
+    row: ulong;
+    col: ulong;
+}
+
+table Answer
+{
+    value: bool;
+}
+
+union Message
+{
+    Query,
+    Answer,
+}
+
+table Root
+{
+    message: Message;
+}
+
+
+root_type Root;
