@@ -16,7 +16,7 @@ TCPConnection::TCPConnection(tcp::socket socket)
 }
 
 
-TCPConnection TCPConnection::from_role(Role role, boost::asio::io_service &io_service,
+Conn_p TCPConnection::from_role(Role role, boost::asio::io_service &io_service,
         std::string address, uint16_t port)
 {
     switch (role)
@@ -28,23 +28,23 @@ TCPConnection TCPConnection::from_role(Role role, boost::asio::io_service &io_se
     }
 }
 
-TCPConnection TCPConnection::connect(boost::asio::io_service &io_service,
+Conn_p TCPConnection::connect(boost::asio::io_service &io_service,
         std::string address, uint16_t port)
 {
     tcp::socket socket(io_service);
     tcp::resolver resolver(socket.get_io_service());
     boost::asio::connect(socket, resolver.resolve({address, std::to_string(port)}));
-    return TCPConnection(std::move(socket));
+    return std::make_shared<TCPConnection>(std::move(socket));
 }
 
-TCPConnection TCPConnection::listen(boost::asio::io_service& io_service,
+Conn_p TCPConnection::listen(boost::asio::io_service& io_service,
         std::string address, uint16_t port)
 {
     tcp::socket socket(io_service);
     tcp::endpoint endpoint(boost::asio::ip::address::from_string(address), port);
     tcp::acceptor acceptor(socket.get_io_service(), endpoint);
     acceptor.accept(socket);
-    return TCPConnection(std::move(socket));
+    return std::make_shared<TCPConnection>(std::move(socket));
 }
 
 
@@ -65,7 +65,12 @@ size_t TCPConnection::recv_length()
     return static_cast<size_t>(ntohl(header));
 }
 
-void TCPConnection::send_message(uint8_t* buffer, size_t length)
+void TCPConnection::send_message(const bytes_t &buffer)
+{
+    send_message(buffer.data(), buffer.size());
+}
+
+void TCPConnection::send_message(const uint8_t *buffer, size_t length)
 {
     send_length(length);
     boost::asio::write(socket_, boost::asio::buffer(buffer, length));

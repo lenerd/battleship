@@ -46,9 +46,16 @@ int main(int argc, char* argv[])
     boost::asio::io_service io_service;
     try
     {
-        TCPConnection connection(TCPConnection::from_role(vm["role"].as<Role>(), io_service, vm["address"].as<std::string>(), vm["game-port"].as<uint16_t>()));
-        UIFactory ui_factory{vm["http-port"].as<uint16_t>(), vm["ws-port"].as<uint16_t>()};
-        Game game(vm["role"].as<Role>(), ui_factory, vm["ui"].as<UIType>(), connection);
+        auto connection(TCPConnection::from_role(vm["role"].as<Role>(),
+                                                 io_service,
+                                                 vm["address"].as<std::string>(),
+                                                 vm["game-port"].as<uint16_t>()));
+        UIFactory ui_factory{vm["http-port"].as<uint16_t>(),
+                             vm["ws-port"].as<uint16_t>()};
+        Game game(vm["role"].as<Role>(),
+                  ui_factory,
+                  vm["ui"].as<UIType>(),
+                  connection);
 
         game.run();
     }

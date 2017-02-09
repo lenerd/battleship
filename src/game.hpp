@@ -4,9 +4,9 @@
 #include <memory>
 #include "board.hpp"
 #include "options.hpp"
+#include "game_communicator.hpp"
 
 enum class Role;
-class Connection;
 class UserInterface;
 class UIFactory;
 
@@ -30,7 +30,7 @@ public:
         abort,
         end,
     };
-    Game(Role role, const UIFactory &ui_factory, UIType ui_type, Connection &connection);
+    Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn);
     ~Game();
     void run();
 
@@ -54,7 +54,7 @@ private:
     std::unique_ptr<Board> board_local_;
     std::unique_ptr<Board> board_remote_;
     std::unique_ptr<UserInterface> ui_;
-    Connection &connection_;
+    GameCommunicator game_comm_;
     bool won_;
 };
 

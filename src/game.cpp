@@ -2,19 +2,19 @@
 #include <functional>
 #include <iostream>
 #include <stdexcept>
-#include "connection.hpp"
+#include "game_communicator.hpp"
 #include "game.hpp"
 #include "options.hpp"
 #include "user_interface.hpp"
 #include "util.hpp"
 
 
-Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Connection &connection)
+Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn)
     : role_(role), state_(State::initial),
       board_local_(std::make_unique<Board>()),
       board_remote_(std::make_unique<Board>()),
       ui_(ui_factory.make(ui_type, *board_local_, *board_remote_)),
-      connection_(connection)
+      game_comm_(conn)
 {
     ui_->show();
 }
@@ -130,7 +130,7 @@ void Game::handle_query_phase()
 
     ui_->post_message("select position");
     auto coords{ui_->select_position()};
-    auto answer{connection_.query_position(coords)};
+    auto answer{game_comm_.query_position(coords)};
     board_remote_->set_queried(coords, answer);
     if (board_remote_->num_ships_hit() < 3)
     {
@@ -149,7 +149,7 @@ void Game::handle_answer_phase()
     std::cerr << "state: answer_phase\n";
 
     ui_->post_message("answering position");
-    connection_.answer_query([this] (coords_t coords)
+    game_comm_.answer_query([this] (coords_t coords)
         {
             return this->board_local_->query(coords);
         });

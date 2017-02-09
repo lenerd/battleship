@@ -2,33 +2,33 @@
 #define TCP_CONNECTION_HPP
 
 #include <boost/asio/ip/tcp.hpp>
-#include "stream_connection.hpp"
+#include "connection.hpp"
 
 enum class Role;
 
-class TCPConnection : public StreamConnection
+class TCPConnection : public Connection
 {
 public:
     TCPConnection(TCPConnection &&conn);
+    TCPConnection(boost::asio::ip::tcp::socket socket);
     ~TCPConnection() = default;
 
-    static TCPConnection from_role(Role role, boost::asio::io_service &io_service,
+    static Conn_p from_role(Role role, boost::asio::io_service &io_service,
         std::string address, uint16_t port);
-    static TCPConnection connect(boost::asio::io_service& io_service,
+    static Conn_p connect(boost::asio::io_service& io_service,
             std::string address, uint16_t port);
-    static TCPConnection listen(boost::asio::io_service& io_service,
+    static Conn_p listen(boost::asio::io_service& io_service,
             std::string address, uint16_t port);
 
-protected:
-    void send_message(uint8_t* buffer, size_t length) override;
-    bytes_t recv_message() override;
+    virtual void send_message(const bytes_t &buffer) override;
+    virtual void send_message(const uint8_t * buffer, size_t length) override;
+    virtual bytes_t recv_message() override;
 private:
 
     void send_length(size_t length);
     size_t recv_length();
 
     const static size_t header_size = 4;
-    TCPConnection(boost::asio::ip::tcp::socket socket);
     boost::asio::ip::tcp::socket socket_;
 };
 

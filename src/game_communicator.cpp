@@ -1,32 +1,36 @@
 #include <cassert>
 #include <stdexcept>
 #include "message_generated.h"
-#include "stream_connection.hpp"
+#include "game_communicator.hpp"
+#include "util.hpp"
 
-#include <iostream>
+GameCommunicator::GameCommunicator(Conn_p conn)
+    : conn_(conn)
+{
+}
 
 
-void StreamConnection::send_query(coords_t coords)
+void GameCommunicator::send_query(coords_t coords)
 {
     flatbuffers::FlatBufferBuilder builder;
     auto query{fbs::CreateQuery(builder, coords.first, coords.second)};
     auto root{fbs::CreateRoot(builder, fbs::Message::Query, query.Union())};
     builder.Finish(root);
     assert(verify_message(builder.GetBufferPointer(), builder.GetSize()));
-    send_message(builder.GetBufferPointer(), builder.GetSize());
+    conn_->send_message(builder.GetBufferPointer(), builder.GetSize());
 }
 
-void StreamConnection::send_answer(bool value)
+void GameCommunicator::send_answer(bool value)
 {
     flatbuffers::FlatBufferBuilder builder;
     auto answer{fbs::CreateAnswer(builder, value)};
     auto root{fbs::CreateRoot(builder, fbs::Message::Answer, answer.Union())};
     builder.Finish(root);
     assert(verify_message(builder.GetBufferPointer(), builder.GetSize()));
-    send_message(builder.GetBufferPointer(), builder.GetSize());
+    conn_->send_message(builder.GetBufferPointer(), builder.GetSize());
 }
 
-coords_t StreamConnection::recv_query()
+coords_t GameCommunicator::recv_query()
 {
     bytes_t buffer(recv_message_verified());
     auto root{fbs::GetRoot(buffer.data())};
@@ -38,7 +42,7 @@ coords_t StreamConnection::recv_query()
     return {query->row(), query->col()};
 }
 
-bool StreamConnection::recv_answer()
+bool GameCommunicator::recv_answer()
 {
     bytes_t buffer(recv_message_verified());
     auto root{fbs::GetRoot(buffer.data())};
@@ -50,22 +54,22 @@ bool StreamConnection::recv_answer()
     return answer->value();
 }
 
-void StreamConnection::answer_query(std::function<bool(coords_t)> fun)
+void GameCommunicator::answer_query(std::function<bool(coords_t)> fun)
 {
     auto coords{recv_query()};
     send_answer(fun(coords));
 }
 
-bool StreamConnection::query_position(coords_t coords)
+bool GameCommunicator::query_position(coords_t coords)
 {
     send_query(coords);
     return recv_answer();
 }
 
 
-bytes_t StreamConnection::recv_message_verified()
+bytes_t GameCommunicator::recv_message_verified()
 {
-    bytes_t buffer(recv_message());
+    bytes_t buffer(conn_->recv_message());
     if (!verify_message(buffer))
     {
         throw std::runtime_error("received malformed buffer");
@@ -73,12 +77,12 @@ bytes_t StreamConnection::recv_message_verified()
     return buffer;
 }
 
-bool StreamConnection::verify_message(bytes_t buffer)
+bool GameCommunicator::verify_message(bytes_t buffer)
 {
     return verify_message(buffer.data(), buffer.size());
 }
 
-bool StreamConnection::verify_message(uint8_t *buffer, size_t size)
+bool GameCommunicator::verify_message(uint8_t *buffer, size_t size)
 {
     flatbuffers::Verifier verifier(buffer, size);
     return fbs::VerifyRootBuffer(verifier);

@@ -7,8 +7,8 @@ TEST_LIBS=-lgtest -lgtest_main
 
 UI_OBJECTS=user_interface.o ncurses_interface.o game_screen.o ncurses_window.o message_window.o board_window.o web_interface.o websocket_connection.o
 CRYPTO_OBJECTS=commitment.o
-NETWORK_OBJECTS=stream_connection.o tcp_connection.o
-GAME_OBJECTS=game.o board.o
+NETWORK_OBJECTS=tcp_connection.o
+GAME_OBJECTS=game.o board.o game_communicator.o
 OBJECTS=options.o util.o ${GAME_OBJECTS} ${UI_OBJECTS} ${CRYPTO_OBJECTS} ${NETWORK_OBJECTS}
 TEST_OBJECTS=test_board.o test_commitment.o test_util.o
 
@@ -25,7 +25,7 @@ battleship: battleship.o ${OBJECTS}
 game_screen: test_game_screen.o ${UI_OBJECTS} ${GAME_OBJECTS}
 	${CXX} -o $@ ${CXXFLAGS} $^ ${LIBS}
 
-test_tcp: test_tcp.o ${NETWORK_OBJECTS}
+test_tcp: test_tcp.o game_communicator.o tcp_connection.o
 	${CXX} -o $@ ${CXXFLAGS} $^ ${LIBS}
 
 test_web: test_web.o ${UI_OBJECTS} board.o
@@ -40,7 +40,7 @@ test: test.o ${OBJECTS} ${TEST_OBJECTS}
 runtest: test
 	./test
 
-stream_connection.o: stream_connection.cpp message_generated.h
+game_communicator.o: game_communicator.cpp message_generated.h
 	${CXX} ${CXXFLAGS} -c $<
 
 %.o: %.cpp
