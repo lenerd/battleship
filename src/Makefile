@@ -5,7 +5,7 @@ INCLUDES=-isystem ../extern/Beast/include/ -isystem ../extern/json/src/
 LIBS=-lncurses -lboost_system -lboost_program_options -lpthread -lcryptopp
 TEST_LIBS=-lgtest -lgtest_main
 
-UI_OBJECTS=user_interface.o ncurses_interface.o config_screen.o game_screen.o ncurses_window.o message_window.o board_window.o web_interface.o websocket_connection.o
+UI_OBJECTS=user_interface.o ncurses_interface.o game_screen.o ncurses_window.o message_window.o board_window.o web_interface.o websocket_connection.o
 CRYPTO_OBJECTS=commitment.o
 NETWORK_OBJECTS=stream_connection.o tcp_connection.o
 GAME_OBJECTS=game.o board.o

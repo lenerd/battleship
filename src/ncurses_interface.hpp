@@ -3,7 +3,6 @@
 
 #include <string>
 #include <memory>
-#include "config_screen.hpp"
 #include "game_screen.hpp"
 #include "user_interface.hpp"
 
@@ -20,7 +19,6 @@ public:
     void post_message(std::string message);
     void wait_for_quit();
 private:
-    // std::unique_ptr<ConfigScreen> config_screen_;
     std::unique_ptr<GameScreen> game_screen_;
 };
 
