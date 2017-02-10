@@ -4,7 +4,6 @@
 #include <bitset>
 #include <vector>
 #include <boost/signals2.hpp>
-#include "commitment.hpp"
 #include "util.hpp"
 
 
@@ -36,7 +35,6 @@ private:
     std::bitset<size*size> ships_;
     std::bitset<size*size> queried_;
     // bool committed_;
-    std::vector<Commitment> commitments;
 };
 
 #endif // BOARD_HPP
