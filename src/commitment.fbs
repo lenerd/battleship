@@ -1,0 +1,34 @@
+namespace comm_fbs;
+
+table HashCommitment
+{
+    padding: [ubyte];
+    hash: [ubyte];
+}
+
+table NaorCommitment
+{
+    seed: [ubyte];
+    rand: [ubyte];
+    commitment: [ubyte];
+}
+
+union CommitmentImpl
+{
+    HashCommitment,
+    NaorCommitment,
+}
+
+table Commitment
+{
+    value: bool;
+    commitment: CommitmentImpl;
+}
+
+table Root
+{
+    commitment: Commitment;
+}
+
+
+root_type Root;

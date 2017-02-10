@@ -1,3 +1,4 @@
+#include <future>
 #include <gtest/gtest.h>
 #include "committer.hpp"
 #include "dummy_connection.hpp"
@@ -27,13 +28,77 @@ TYPED_TEST_CASE_P(CommitterTest);
 
 TYPED_TEST_P(CommitterTest, SendRecv)
 {
-    bytes_t value(16);
-
-    auto comm_s{this->comm_sender->send_commitment(value)};
-    auto comm_r{this->comm_receiver->recv_commitment()};
-
+    bool value(true);
+    auto fut_s_1{std::async(std::launch::async,
+        [this, value]
+        {
+            return this->comm_sender->send_commitment(value);
+        })};
+    auto fut_r_1{std::async(std::launch::async,
+        [this]
+        {
+            return this->comm_receiver->recv_commitment();
+        })};
+    auto comm_s{fut_s_1.get()};
+    auto comm_r{fut_r_1.get()};
     this->comm_sender->send_decommitment(comm_s);
-    ASSERT_TRUE(this->comm_receiver->recv_decommitment(comm_r));
+    auto valid{this->comm_receiver->recv_decommitment(comm_r)};
+    ASSERT_TRUE(valid);
+    ASSERT_EQ(value, comm_r->value);
+
+    value = false;
+    fut_s_1 = std::async(std::launch::async,
+        [this, value]
+        {
+            return this->comm_sender->send_commitment(value);
+        });
+    fut_r_1 = std::async(std::launch::async,
+        [this]
+        {
+            return this->comm_receiver->recv_commitment();
+        });
+    comm_s = fut_s_1.get();
+    comm_r = fut_r_1.get();
+    this->comm_sender->send_decommitment(comm_s);
+    valid = this->comm_receiver->recv_decommitment(comm_r);
+    ASSERT_TRUE(valid);
+    ASSERT_EQ(value, comm_r->value);
+
+    value = true;
+    fut_s_1 = std::async(std::launch::async,
+        [this, value]
+        {
+            return this->comm_sender->send_commitment(value);
+        });
+    fut_r_1 = std::async(std::launch::async,
+        [this]
+        {
+            return this->comm_receiver->recv_commitment();
+        });
+    comm_s = fut_s_1.get();
+    comm_r = fut_r_1.get();
+    comm_s->value = false;
+    this->comm_sender->send_decommitment(comm_s);
+    valid = this->comm_receiver->recv_decommitment(comm_r);
+    ASSERT_FALSE(valid);
+
+    value = false;
+    fut_s_1 = std::async(std::launch::async,
+        [this, value]
+        {
+            return this->comm_sender->send_commitment(value);
+        });
+    fut_r_1 = std::async(std::launch::async,
+        [this]
+        {
+            return this->comm_receiver->recv_commitment();
+        });
+    comm_s = fut_s_1.get();
+    comm_r = fut_r_1.get();
+    comm_s->value = true;
+    this->comm_sender->send_decommitment(comm_s);
+    valid = this->comm_receiver->recv_decommitment(comm_r);
+    ASSERT_FALSE(valid);
 }
 
 

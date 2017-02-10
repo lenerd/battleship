@@ -18,13 +18,13 @@ public:
     HashCommitter(Conn_p conn) : Committer(conn) {}
     virtual ~HashCommitter() = default;
 
-    virtual Comm_p send_commitment(bytes_t) override;
+    virtual Comm_p send_commitment(bool) override;
     virtual void send_decommitment(const Comm_p&) override;
 
     virtual Comm_p recv_commitment() override;
     virtual bool recv_decommitment(Comm_p&) override;
 
-    Comm_p make_commitment(const bytes_t value) const;
+    HashComm_p make_commitment(bool value) const;
     bool verify_commitment(const Comm_p &comm) const;
 
 private:

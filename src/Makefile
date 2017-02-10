@@ -6,11 +6,11 @@ LIBS=-lncurses -lboost_system -lboost_program_options -lpthread -lcryptopp
 TEST_LIBS=-lgtest -lgtest_main
 
 UI_OBJECTS=user_interface.o ncurses_interface.o game_screen.o ncurses_window.o message_window.o board_window.o web_interface.o websocket_connection.o
-CRYPTO_OBJECTS=hash_committer.o naor_committer.o
+CRYPTO_OBJECTS=committer.o hash_committer.o naor_committer.o
 NETWORK_OBJECTS=tcp_connection.o
 GAME_OBJECTS=game.o board.o game_communicator.o
 OBJECTS=options.o util.o ${GAME_OBJECTS} ${UI_OBJECTS} ${CRYPTO_OBJECTS} ${NETWORK_OBJECTS}
-TEST_OBJECTS=dummy_connection.o test_dummy_connection.cpp test_board.o test_committer.o test_hash_committer.o test_util.o
+TEST_OBJECTS=dummy_connection.o test_dummy_connection.cpp test_board.o test_committer.o test_hash_committer.o test_naor_committer.o test_util.o
 
 BINARIES=battleship test test_web test_ws test_tcp game_screen
 
@@ -41,7 +41,16 @@ runtest: test
 	./test
 
 game_communicator.o: game_communicator.cpp message_generated.h
-	${CXX} ${CXXFLAGS} -c $<
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c $<
+
+committer.o: committer.cpp commitment_generated.h
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c $<
+
+hash_committer.o: hash_committer.cpp commitment_generated.h
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c $<
+
+naor_committer.o: naor_committer.cpp commitment_generated.h
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c $<
 
 %.o: %.cpp
 	${CXX} ${CXXFLAGS} ${INCLUDES} -c $^

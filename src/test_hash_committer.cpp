@@ -26,15 +26,27 @@ TYPED_TEST_CASE_P(HashCommitterTest);
 
 TYPED_TEST_P(HashCommitterTest, MakeVerify)
 {
-    bytes_t value(16);
+    bool value{true};
     auto comm = this->comm_sender->make_commitment(value);
     ASSERT_EQ(value, comm->value);
     ASSERT_TRUE(this->comm_sender->verify_commitment(comm));
 
-    value = bytes_t(16, 0x42);
+    value = false;
     comm = this->comm_sender->make_commitment(value);
     ASSERT_EQ(value, comm->value);
     ASSERT_TRUE(this->comm_sender->verify_commitment(comm));
+
+    value = true;
+    comm = this->comm_sender->make_commitment(value);
+    comm->value = false;
+    ASSERT_NE(value, comm->value);
+    ASSERT_FALSE(this->comm_sender->verify_commitment(comm));
+
+    value = false;
+    comm = this->comm_sender->make_commitment(value);
+    comm->value = true;
+    ASSERT_NE(value, comm->value);
+    ASSERT_FALSE(this->comm_sender->verify_commitment(comm));
 }
 
 
