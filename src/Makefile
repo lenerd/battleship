@@ -10,7 +10,7 @@ CRYPTO_OBJECTS=committer.o hash_committer.o naor_committer.o
 NETWORK_OBJECTS=tcp_connection.o
 GAME_OBJECTS=game.o board.o game_communicator.o
 OBJECTS=options.o util.o ${GAME_OBJECTS} ${UI_OBJECTS} ${CRYPTO_OBJECTS} ${NETWORK_OBJECTS}
-TEST_OBJECTS=dummy_connection.o test_dummy_connection.cpp test_board.o test_committer.o test_hash_committer.o test_naor_committer.o test_queue.o test_util.o
+TEST_OBJECTS=dummy_connection.o test_dummy_connection.cpp test_board.o test_committer.o test_hash_committer.o test_naor_committer.o test_queue.o test_misc.o
 
 BINARIES=battleship test test_web test_ws test_tcp game_screen
 
