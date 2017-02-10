@@ -8,8 +8,8 @@ DummyConnection::~DummyConnection() = default;
 
 std::pair<Conn_p, Conn_p> DummyConnection::make_dummies()
 {
-    auto queue_12{std::make_shared<std::queue<bytes_t>>()};
-    auto queue_21{std::make_shared<std::queue<bytes_t>>()};
+    auto queue_12{std::make_shared<message_queue_t::element_type>()};
+    auto queue_21{std::make_shared<message_queue_t::element_type>()};
     auto conn1{std::make_shared<DummyConnection>(queue_12, queue_21)};
     auto conn2{std::make_shared<DummyConnection>(queue_21, queue_12)};
     assert(conn1->send_queue_ == conn2->recv_queue_);
@@ -20,14 +20,10 @@ std::pair<Conn_p, Conn_p> DummyConnection::make_dummies()
 
 void DummyConnection::send_message(const uint8_t *buffer, size_t size)
 {
-    send_queue_->emplace(buffer, buffer + size);
-    assert(!send_queue_->empty());
+    send_queue_->enqueue(bytes_t(buffer, buffer + size));
 }
 
 bytes_t DummyConnection::recv_message()
 {
-    assert(!recv_queue_->empty());
-    auto buffer{std::move(recv_queue_->front())};
-    recv_queue_->pop();
-    return buffer;
+    return recv_queue_->dequeue();
 }
