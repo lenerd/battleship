@@ -2,6 +2,7 @@
 #include <memory>
 #include <util.hpp>
 #include <cryptopp/sha.h>
+#include <cryptopp/sha3.h>
 #include "hash_committer.hpp"
 #include "commitment_generated.h"
 
@@ -112,5 +113,15 @@ bytes_t SHA1_HashCommitter::hash_function(const bytes_t &data, const bytes_t &pa
     sha1.Update(data.data(), data.size());
     sha1.Update(padding.data(), padding.size());
     sha1.Final(digest.data());
+    return digest;
+}
+
+bytes_t SHA3_HashCommitter::hash_function(const bytes_t &data, const bytes_t &padding) const
+{
+    CryptoPP::SHA3_256 sha3;
+    bytes_t digest(sha3.DigestSize());
+    sha3.Update(data.data(), data.size());
+    sha3.Update(padding.data(), padding.size());
+    sha3.Final(digest.data());
     return digest;
 }
