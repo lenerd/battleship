@@ -9,9 +9,11 @@ enum class Role;
 class TCPConnection : public Connection
 {
 public:
-    TCPConnection(TCPConnection &&conn);
     TCPConnection(boost::asio::ip::tcp::socket socket);
     ~TCPConnection() = default;
+
+    TCPConnection(TCPConnection&&) = default;
+    TCPConnection& operator=(TCPConnection&&) = default;
 
     static Conn_p from_role(Role role, boost::asio::io_service &io_service,
         std::string address, uint16_t port);
@@ -20,7 +22,6 @@ public:
     static Conn_p listen(boost::asio::io_service& io_service,
             std::string address, uint16_t port);
 
-    virtual void send_message(const bytes_t &buffer) override;
     virtual void send_message(const uint8_t * buffer, size_t length) override;
     virtual bytes_t recv_message() override;
 private:

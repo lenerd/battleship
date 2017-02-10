@@ -6,10 +6,6 @@
 using boost::asio::ip::tcp;
 
 
-TCPConnection::TCPConnection(TCPConnection &&conn)
-    : socket_(std::move(conn.socket_))
-{
-}
 TCPConnection::TCPConnection(tcp::socket socket)
     : socket_(std::move(socket))
 {
@@ -63,11 +59,6 @@ size_t TCPConnection::recv_length()
     static_assert(sizeof(header) == header_size, "header size mismatch");
     boost::asio::read(socket_, boost::asio::buffer(&header, sizeof(header)));
     return static_cast<size_t>(ntohl(header));
-}
-
-void TCPConnection::send_message(const bytes_t &buffer)
-{
-    send_message(buffer.data(), buffer.size());
 }
 
 void TCPConnection::send_message(const uint8_t *buffer, size_t length)

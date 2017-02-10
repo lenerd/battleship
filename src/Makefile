@@ -10,7 +10,7 @@ CRYPTO_OBJECTS=commitment.o
 NETWORK_OBJECTS=tcp_connection.o
 GAME_OBJECTS=game.o board.o game_communicator.o
 OBJECTS=options.o util.o ${GAME_OBJECTS} ${UI_OBJECTS} ${CRYPTO_OBJECTS} ${NETWORK_OBJECTS}
-TEST_OBJECTS=test_board.o test_commitment.o test_util.o
+TEST_OBJECTS=dummy_connection.o test_dummy_connection.cpp test_board.o test_commitment.o test_util.o
 
 BINARIES=battleship test test_web test_ws test_tcp game_screen
 
