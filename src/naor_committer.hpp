@@ -34,7 +34,16 @@ public:
     NaorComm_p make_commitment(bool value, bytes_t rand) const;
 
 private:
-    virtual bytes_t pseudo_gen(const bytes_t &seed, size_t length) const;
+    virtual bytes_t pseudo_gen(const bytes_t &seed, size_t length) const = 0;
+};
+
+class CTR_NaorCommitter : public NaorCommitter
+{
+public:
+    CTR_NaorCommitter(Conn_p conn) : NaorCommitter(conn) {}
+    virtual ~CTR_NaorCommitter() = default;
+private:
+    virtual bytes_t pseudo_gen(const bytes_t &seed, size_t length) const final override;
 };
 
 #endif // NAOR_COMMITTER_HPP

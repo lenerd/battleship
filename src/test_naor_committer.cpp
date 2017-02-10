@@ -5,15 +5,15 @@
 #include "naor_committer.hpp"
 #include "util.hpp"
 
-
+template <typename T>
 class NaorCommitterTest : public ::testing::Test
 {
 protected:
     NaorCommitterTest()
     {
         auto conn_pair{DummyConnection::make_dummies()};
-        comm_sender = std::make_unique<NaorCommitter>(conn_pair.first);
-        comm_receiver = std::make_unique<NaorCommitter>(conn_pair.second);
+        comm_sender = std::make_unique<T>(conn_pair.first);
+        comm_receiver = std::make_unique<T>(conn_pair.second);
     }
     virtual ~NaorCommitterTest() = default;
 
@@ -22,7 +22,10 @@ protected:
 };
 
 
-TEST_F(NaorCommitterTest, CommitDecommit)
+TYPED_TEST_CASE_P(NaorCommitterTest);
+
+
+TYPED_TEST_P(NaorCommitterTest, CommitDecommit)
 {
     auto value{true};
     auto fut_s_1{std::async(std::launch::async,
@@ -60,11 +63,20 @@ TEST_F(NaorCommitterTest, CommitDecommit)
     ASSERT_EQ(ncomm_s->rand, ncomm_r->rand);
     ASSERT_EQ(ncomm_s->commitment, ncomm_r->commitment);
 
-    comm_sender->send_decommitment(comm_s);
-    auto valid{comm_receiver->recv_decommitment(comm_r)};
+    this->comm_sender->send_decommitment(comm_s);
+    auto valid{this->comm_receiver->recv_decommitment(comm_r)};
 
     ASSERT_TRUE(valid);
     ASSERT_EQ(comm_s->value, comm_r->value);
     ASSERT_EQ(ncomm_s->seed, ncomm_r->seed);
 }
 
+
+REGISTER_TYPED_TEST_CASE_P(
+        NaorCommitterTest,
+        CommitDecommit);
+
+
+typedef ::testing::Types<CTR_NaorCommitter> NaorCommitterImplementations;
+
+INSTANTIATE_TYPED_TEST_CASE_P(NaorCommitterTestInstance, NaorCommitterTest, NaorCommitterImplementations);

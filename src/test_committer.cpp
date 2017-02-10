@@ -107,6 +107,6 @@ REGISTER_TYPED_TEST_CASE_P(
         SendRecv);
 
 
-typedef ::testing::Types<SHA1Committer, NaorCommitter> CommitterImplementations;
+typedef ::testing::Types<SHA1_HashCommitter, CTR_NaorCommitter> CommitterImplementations;
 
 INSTANTIATE_TYPED_TEST_CASE_P(CommitterTestInstance, CommitterTest, CommitterImplementations);

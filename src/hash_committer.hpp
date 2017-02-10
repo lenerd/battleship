@@ -31,11 +31,11 @@ private:
     virtual bytes_t hash_function(const bytes_t&, const bytes_t&) const = 0;
 };
 
-class SHA1Committer : public HashCommitter
+class SHA1_HashCommitter : public HashCommitter
 {
 public:
-    SHA1Committer(Conn_p conn) : HashCommitter(conn) {}
-    virtual ~SHA1Committer() = default;
+    SHA1_HashCommitter(Conn_p conn) : HashCommitter(conn) {}
+    virtual ~SHA1_HashCommitter() = default;
 private:
     virtual bytes_t hash_function(const bytes_t&, const bytes_t&) const final override;
 };

@@ -161,7 +161,7 @@ bool NaorCommitter::verify_commitment(const Comm_p &comm) const
                       comm_cmp.cbegin(), comm_cmp.cend());
 }
 
-bytes_t NaorCommitter::pseudo_gen(const bytes_t &seed, size_t length) const
+bytes_t CTR_NaorCommitter::pseudo_gen(const bytes_t &seed, size_t length) const
 {
     bytes_t pseudo_seq(length);
     bytes_t zero_bytes(16);

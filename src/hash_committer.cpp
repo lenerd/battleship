@@ -105,7 +105,7 @@ bool HashCommitter::verify_commitment(const Comm_p &comm) const
                       comp.cbegin(), comp.cend());
 }
 
-bytes_t SHA1Committer::hash_function(const bytes_t &data, const bytes_t &padding) const
+bytes_t SHA1_HashCommitter::hash_function(const bytes_t &data, const bytes_t &padding) const
 {
     CryptoPP::SHA1 sha1;
     bytes_t digest(sha1.DigestSize());
