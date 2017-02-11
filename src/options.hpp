@@ -18,17 +18,17 @@ enum class UIType
     web,
 };
 
-// struct Options
-// {
-//     UIType ui_type;
-//     Role role;
-//     // network options
-//     std::string address;
-//     uint16_t bs_port;
-//     uint16_t aby_port;
-//     uint16_t ws_port;
-//     uint16_t http_port;
-// };
+struct Options
+{
+    Role role;
+    UIType ui_type;
+    // network options
+    std::string address;
+    uint16_t game_port;
+    uint16_t aby_port;
+    uint16_t ws_port;
+    uint16_t http_port;
+};
 
 
 std::istream& operator>>(std::istream &is, Role &role);

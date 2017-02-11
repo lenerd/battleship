@@ -11,7 +11,7 @@
 class NCursesInterface : public UserInterface
 {
 public:
-    NCursesInterface(Board_p board_local, Board_p board_remote);
+    NCursesInterface(Board_p board_local, Board_p board_remote, const Options&);
     ~NCursesInterface();
     void show();
     void place_ships();

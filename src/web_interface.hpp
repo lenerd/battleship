@@ -13,7 +13,7 @@ class WebInterface : public UserInterface
 {
 public:
     WebInterface(Board_p board_local, Board_p board_remote,
-            uint16_t http_port, uint16_t ws_port);
+            const Options &options);
     ~WebInterface();
     void show();
     void place_ships();

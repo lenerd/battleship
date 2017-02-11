@@ -19,9 +19,9 @@ struct WebInterface::WebInterfaceImpl
 };
 
 WebInterface::WebInterface(Board_p board_local, Board_p board_remote,
-        uint16_t http_port, uint16_t ws_port)
+        const Options &options)
         : UserInterface(board_local, board_remote),
-        http_port(http_port), ws_port(ws_port),
+        http_port(options.http_port), ws_port(options.ws_port),
         pImpl(std::make_unique<WebInterfaceImpl>())
 {
     // start webserver

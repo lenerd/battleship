@@ -28,12 +28,11 @@ using UI_p = std::unique_ptr<UserInterface>;
 class UIFactory
 {
 public:
-    UIFactory(uint16_t http_port, uint16_t ws_port);
+    UIFactory(const Options &options);
     ~UIFactory() = default;
     UI_p make(UIType type, Board_p board_local, Board_p board_remote) const;
 private:
-    uint16_t http_port_;
-    uint16_t ws_port_;
+    const Options& options_;
 };
 
 #endif // USER_INTERFACE_HPP

@@ -11,7 +11,7 @@
 namespace po = boost::program_options;
 
 
-int main(int argc, char* argv[])
+Options parse_arguments(int argc, char* argv[])
 {
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -34,27 +34,41 @@ int main(int argc, char* argv[])
     {
         std::cerr << "Error parsing arguments: " << e.what() << "\n";
         std::cerr << "\n" << desc << "\n";
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
 
     if (vm.count("help"))
     {
         std::cerr << desc << "\n";
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
+    Options options;
+    options.role = vm["role"].as<Role>();
+    options.ui_type = vm["ui"].as<UIType>();
+    options.address = vm["address"].as<std::string>();
+    options.game_port = vm["game-port"].as<uint16_t>();
+    options.aby_port = vm["aby-port"].as<uint16_t>();
+    options.http_port = vm["http-port"].as<uint16_t>();
+    options.ws_port = vm["ws-port"].as<uint16_t>();
+    return options;
+}
+
+
+int main(int argc, char* argv[])
+{
+    auto options{parse_arguments(argc, argv)};
 
     boost::asio::io_service io_service;
     try
     {
-        auto connection(TCPConnection::from_role(vm["role"].as<Role>(),
+        auto connection(TCPConnection::from_role(options.role,
                                                  io_service,
-                                                 vm["address"].as<std::string>(),
-                                                 vm["game-port"].as<uint16_t>()));
-        UIFactory ui_factory{vm["http-port"].as<uint16_t>(),
-                             vm["ws-port"].as<uint16_t>()};
-        Game game(vm["role"].as<Role>(),
+                                                 options.address,
+                                                 options.game_port));
+        UIFactory ui_factory{options};
+        Game game(options.role,
                   ui_factory,
-                  vm["ui"].as<UIType>(),
+                  options.ui_type,
                   connection);
 
         game.run();
