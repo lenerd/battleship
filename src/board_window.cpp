@@ -5,11 +5,11 @@
 #include <ncurses.h>
 #include "board_window.hpp"
 
-BoardWindow::BoardWindow(int starty, int startx, Board& board)
-    : NCursesWindow(starty, startx, 1 + 2 * board.size + 1, 2 + 4 * board.size + 1),
+BoardWindow::BoardWindow(int starty, int startx, Board_p board)
+    : NCursesWindow(starty, startx, 1 + 2 * board->size + 1, 2 + 4 * board->size + 1),
       board_(board), cursor_y_(0), cursor_x_(0)
 {
-    board_.signal_updated_position.connect([this] (coords_t coords) { this->update_position(coords.first, coords.second); });
+    board_->signal_updated_position.connect([this] (coords_t coords) { this->update_position(coords.first, coords.second); });
 }
 
 BoardWindow::~BoardWindow()
@@ -19,7 +19,7 @@ BoardWindow::~BoardWindow()
 
 void BoardWindow::draw_grid()
 {
-    auto size{board_.size};
+    auto size{board_->size};
     for (size_t col = 0; col < size; ++col)
     {
         print(0, offset_left + cell_width*col + 2, "%c", '0' + col);
@@ -62,9 +62,9 @@ int BoardWindow::get_width() const
 
 char BoardWindow::get_char(size_t row, size_t col) const
 {
-    if (board_.get({row, col}))
+    if (board_->get({row, col}))
     {
-        if (board_.is_queried({row, col}))
+        if (board_->is_queried({row, col}))
         {
             return 'X';
         }
@@ -75,7 +75,7 @@ char BoardWindow::get_char(size_t row, size_t col) const
     }
     else
     {
-        if (board_.is_queried({row, col}))
+        if (board_->is_queried({row, col}))
         {
             return '~';
         }
@@ -88,7 +88,7 @@ char BoardWindow::get_char(size_t row, size_t col) const
 
 void BoardWindow::cursor_update(size_t row, size_t col)
 {
-    std::cerr << board_.size << '\n';
+    std::cerr << board_->size << '\n';
     std::cerr << cursor_y_ << "," << cursor_x_
         << " -> " << row << "," << col << "\n";
     auto old_y{cursor_y_};
@@ -126,22 +126,22 @@ bool BoardWindow::cursor_toggle()
 
 void BoardWindow::cursor_up()
 {
-    cursor_update((cursor_y_ - 1 + board_.size) % board_.size, cursor_x_);
+    cursor_update((cursor_y_ - 1 + board_->size) % board_->size, cursor_x_);
 }
 
 void BoardWindow::cursor_down()
 {
-    cursor_update((cursor_y_ + 1) % board_.size, cursor_x_);
+    cursor_update((cursor_y_ + 1) % board_->size, cursor_x_);
 }
 
 void BoardWindow::cursor_left()
 {
-    cursor_update(cursor_y_, (cursor_x_ - 1 + board_.size) % board_.size);
+    cursor_update(cursor_y_, (cursor_x_ - 1 + board_->size) % board_->size);
 }
 
 void BoardWindow::cursor_right()
 {
-    cursor_update(cursor_y_, (cursor_x_ + 1) % board_.size);
+    cursor_update(cursor_y_, (cursor_x_ + 1) % board_->size);
 }
 
 void BoardWindow::update_position(size_t row, size_t col)
@@ -162,7 +162,7 @@ void BoardWindow::update_position(size_t row, size_t col)
 
 void BoardWindow::toggle_position(size_t row, size_t col)
 {
-    board_.flip({row, col});
+    board_->flip({row, col});
 }
 
 void BoardWindow::place_ships()

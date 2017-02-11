@@ -12,7 +12,7 @@ class Board;
 class WebInterface : public UserInterface
 {
 public:
-    WebInterface(Board &board_local, Board &board_remote,
+    WebInterface(Board_p board_local, Board_p board_remote,
             uint16_t http_port, uint16_t ws_port);
     ~WebInterface();
     void show();

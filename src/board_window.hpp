@@ -11,7 +11,7 @@
 class BoardWindow : public NCursesWindow
 {
 public:
-    BoardWindow(int starty, int startx, Board& board);
+    BoardWindow(int starty, int startx, Board_p board);
     ~BoardWindow();
     void draw_grid();
     std::pair<size_t, size_t> index_to_win(size_t row, size_t col) const;
@@ -40,7 +40,7 @@ public:
     static const int cell_width = 4;
     static const int cell_height = 2;
 private:
-    Board& board_;
+    Board_p board_;
     size_t cursor_y_;
     size_t cursor_x_;
     bool display_cursor_;

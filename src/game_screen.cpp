@@ -7,7 +7,7 @@
 #include "message_window.hpp"
 
 
-GameScreen::GameScreen(Board& board_local, Board& board_remote)
+GameScreen::GameScreen(Board_p board_local, Board_p board_remote)
     : board_local_(board_local), board_remote_(board_remote)
 {
     bw_local_ = std::make_unique<BoardWindow>(1, 2, board_local);

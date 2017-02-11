@@ -11,9 +11,9 @@
 
 Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn)
     : role_(role), state_(State::initial),
-      board_local_(std::make_unique<Board>()),
-      board_remote_(std::make_unique<Board>()),
-      ui_(ui_factory.make(ui_type, *board_local_, *board_remote_)),
+      board_local_(std::make_shared<Board>()),
+      board_remote_(std::make_shared<Board>()),
+      ui_(ui_factory.make(ui_type, board_local_, board_remote_)),
       game_comm_(conn)
 {
     ui_->show();

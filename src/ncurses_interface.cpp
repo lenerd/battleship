@@ -2,7 +2,7 @@
 #include "ncurses.h"
 #include "ncurses_interface.hpp"
 
-NCursesInterface::NCursesInterface(Board &board_local, Board &board_remote)
+NCursesInterface::NCursesInterface(Board_p board_local, Board_p board_remote)
     : UserInterface(board_local, board_remote)
 {
     // init ncurses

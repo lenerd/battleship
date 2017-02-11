@@ -3,15 +3,15 @@
 
 #include <string>
 #include <memory>
+#include "board.hpp"
 #include "game_screen.hpp"
 #include "user_interface.hpp"
 
-class Board;
 
 class NCursesInterface : public UserInterface
 {
 public:
-    NCursesInterface(Board &board_local, Board &board_remote);
+    NCursesInterface(Board_p board_local, Board_p board_remote);
     ~NCursesInterface();
     void show();
     void place_ships();

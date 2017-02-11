@@ -2,6 +2,7 @@
 #define BOARD_HPP
 
 #include <bitset>
+#include <memory>
 #include <vector>
 #include <boost/signals2.hpp>
 #include "util.hpp"
@@ -36,5 +37,7 @@ private:
     std::bitset<size*size> queried_;
     // bool committed_;
 };
+
+using Board_p = std::shared_ptr<Board>;
 
 #endif // BOARD_HPP

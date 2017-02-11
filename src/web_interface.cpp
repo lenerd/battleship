@@ -18,7 +18,7 @@ struct WebInterface::WebInterfaceImpl
     ~WebInterfaceImpl() {}
 };
 
-WebInterface::WebInterface(Board &board_local, Board &board_remote,
+WebInterface::WebInterface(Board_p board_local, Board_p board_remote,
         uint16_t http_port, uint16_t ws_port)
         : UserInterface(board_local, board_remote),
         http_port(http_port), ws_port(ws_port),
@@ -38,11 +38,11 @@ WebInterface::WebInterface(Board &board_local, Board &board_remote,
         std::cerr << "Exception: " << e.what() << "\n";
         kill_webserver();
     }
-    board_local_.signal_updated_position.connect([this] (coords_t coords)
+    board_local_->signal_updated_position.connect([this] (coords_t coords)
         {
             this->update_position("local", coords.first, coords.second);
         });
-    board_remote_.signal_updated_position.connect([this] (coords_t coords)
+    board_remote_->signal_updated_position.connect([this] (coords_t coords)
         {
             this->update_position("remote", coords.first, coords.second);
         });
@@ -65,7 +65,7 @@ void WebInterface::place_ships()
 {
     try
     {
-        board_local_.debug();
+        board_local_->debug();
         while (true)
         {
             auto data{pImpl->ws_conn->recv_message()};
@@ -73,7 +73,7 @@ void WebInterface::place_ships()
             if (message["type"] == "toggle_position")
             {
                 coords_t coords{message["row"], message["col"]};
-                board_local_.flip(coords);
+                board_local_->flip(coords);
             }
             else if (message["type"] == "submit_board")
             {
@@ -83,7 +83,7 @@ void WebInterface::place_ships()
             {
                 std::cerr << "ignoring message: " << data << "\n";
             }
-            board_local_.debug();
+            board_local_->debug();
         }
     }
     catch (std::exception &e)
@@ -143,13 +143,13 @@ void WebInterface::update_position(std::string board, size_t row, size_t col)
     j["col"] = col;
     if (board == "local")
     {
-        j["ship"] = board_local_.get({row, col});
-        j["queried"] = board_local_.is_queried({row, col});
+        j["ship"] = board_local_->get({row, col});
+        j["queried"] = board_local_->is_queried({row, col});
     }
     else if (board == "remote")
     {
-        j["ship"] = board_remote_.get({row, col});
-        j["queried"] = board_remote_.is_queried({row, col});
+        j["ship"] = board_remote_->get({row, col});
+        j["queried"] = board_remote_->is_queried({row, col});
     }
     pImpl->ws_conn->send_message(j.dump());
 }

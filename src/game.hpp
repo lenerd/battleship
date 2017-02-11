@@ -5,11 +5,9 @@
 #include "board.hpp"
 #include "options.hpp"
 #include "game_communicator.hpp"
+#include "user_interface.hpp"
 
 enum class Role;
-class UserInterface;
-class UIFactory;
-
 
 class Game
 {
@@ -51,9 +49,9 @@ public:
 private:
     Role role_;
     State state_;
-    std::unique_ptr<Board> board_local_;
-    std::unique_ptr<Board> board_remote_;
-    std::unique_ptr<UserInterface> ui_;
+    Board_p board_local_;
+    Board_p board_remote_;
+    UI_p ui_;
     GameCommunicator game_comm_;
     bool won_;
 };

@@ -4,7 +4,7 @@
 #include "ncurses_interface.hpp"
 #include "web_interface.hpp"
 
-UserInterface::UserInterface(Board &board_local, Board &board_remote)
+UserInterface::UserInterface(Board_p board_local, Board_p board_remote)
     : board_local_(board_local), board_remote_(board_remote)
 {}
 
@@ -16,8 +16,8 @@ UIFactory::UIFactory(uint16_t http_port, uint16_t ws_port)
 {
 }
 
-std::unique_ptr<UserInterface> UIFactory::make(UIType type,
-            Board &board_local, Board &board_remote) const
+UI_p UIFactory::make(UIType type, Board_p board_local, Board_p board_remote)
+    const
 {
     switch (type)
     {
