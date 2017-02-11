@@ -40,7 +40,7 @@ test: test.o ${OBJECTS} ${TEST_OBJECTS}
 runtest: test
 	./test
 
-game_communicator.o: game_communicator.cpp message_generated.h
+game_communicator.o: game_communicator.cpp game_generated.h
 	${CXX} ${CXXFLAGS} ${INCLUDES} -c $<
 
 committer.o: committer.cpp commitment_generated.h

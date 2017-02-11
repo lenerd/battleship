@@ -1,4 +1,4 @@
-namespace fbs;
+namespace game_fbs;
 
 table Query
 {

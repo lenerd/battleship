@@ -1,6 +1,6 @@
 #include <cassert>
 #include <stdexcept>
-#include "message_generated.h"
+#include "game_generated.h"
 #include "game_communicator.hpp"
 #include "util.hpp"
 
@@ -13,8 +13,8 @@ GameCommunicator::GameCommunicator(Conn_p conn)
 void GameCommunicator::send_query(coords_t coords)
 {
     flatbuffers::FlatBufferBuilder builder;
-    auto query{fbs::CreateQuery(builder, coords.first, coords.second)};
-    auto root{fbs::CreateRoot(builder, fbs::Message::Query, query.Union())};
+    auto query{game_fbs::CreateQuery(builder, coords.first, coords.second)};
+    auto root{game_fbs::CreateRoot(builder, game_fbs::Message::Query, query.Union())};
     builder.Finish(root);
     assert(verify_message(builder.GetBufferPointer(), builder.GetSize()));
     conn_->send_message(builder.GetBufferPointer(), builder.GetSize());
@@ -23,8 +23,8 @@ void GameCommunicator::send_query(coords_t coords)
 void GameCommunicator::send_answer(bool value)
 {
     flatbuffers::FlatBufferBuilder builder;
-    auto answer{fbs::CreateAnswer(builder, value)};
-    auto root{fbs::CreateRoot(builder, fbs::Message::Answer, answer.Union())};
+    auto answer{game_fbs::CreateAnswer(builder, value)};
+    auto root{game_fbs::CreateRoot(builder, game_fbs::Message::Answer, answer.Union())};
     builder.Finish(root);
     assert(verify_message(builder.GetBufferPointer(), builder.GetSize()));
     conn_->send_message(builder.GetBufferPointer(), builder.GetSize());
@@ -33,24 +33,24 @@ void GameCommunicator::send_answer(bool value)
 coords_t GameCommunicator::recv_query()
 {
     bytes_t buffer(recv_message_verified());
-    auto root{fbs::GetRoot(buffer.data())};
-    if (root->message_type() != fbs::Message::Query)
+    auto root{game_fbs::GetRoot(buffer.data())};
+    if (root->message_type() != game_fbs::Message::Query)
     {
         throw std::runtime_error("expected query");
     }
-    auto query{static_cast<const fbs::Query*>(root->message())};
+    auto query{static_cast<const game_fbs::Query*>(root->message())};
     return {query->row(), query->col()};
 }
 
 bool GameCommunicator::recv_answer()
 {
     bytes_t buffer(recv_message_verified());
-    auto root{fbs::GetRoot(buffer.data())};
-    if (root->message_type() != fbs::Message::Answer)
+    auto root{game_fbs::GetRoot(buffer.data())};
+    if (root->message_type() != game_fbs::Message::Answer)
     {
         throw std::runtime_error("expected answer");
     }
-    auto answer{static_cast<const fbs::Answer*>(root->message())};
+    auto answer{static_cast<const game_fbs::Answer*>(root->message())};
     return answer->value();
 }
 
@@ -85,6 +85,6 @@ bool GameCommunicator::verify_message(bytes_t buffer)
 bool GameCommunicator::verify_message(uint8_t *buffer, size_t size)
 {
     flatbuffers::Verifier verifier(buffer, size);
-    return fbs::VerifyRootBuffer(verifier);
+    return game_fbs::VerifyRootBuffer(verifier);
 }
 
