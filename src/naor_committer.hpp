@@ -2,7 +2,7 @@
 #define NAOR_COMMITTER_HPP
 
 #include <memory>
-#include <connection.hpp>
+#include "connection.hpp"
 #include <committer.hpp>
 #include "util.hpp"
 

@@ -2,7 +2,7 @@
 #define COMMITTER_HPP
 
 #include <memory>
-#include <connection.hpp>
+#include "connection.hpp"
 #include "util.hpp"
 
 
