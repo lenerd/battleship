@@ -1,10 +1,10 @@
 #include <algorithm>
 #include <memory>
-#include <util.hpp>
 #include <cryptopp/sha.h>
 #include <cryptopp/sha3.h>
 #include "hash_committer.hpp"
 #include "commitment_generated.h"
+#include "util.hpp"
 
 
 Comm_p HashCommitter::send_commitment(bool value)
