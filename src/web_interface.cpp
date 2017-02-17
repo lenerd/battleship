@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <signal.h>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include "board.hpp"
 #include "web_interface.hpp"
 #include "websocket_connection.hpp"
