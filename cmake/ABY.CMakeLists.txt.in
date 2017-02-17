@@ -1,0 +1,77 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(ABY)
+
+
+set(CMAKE_CXX_FLAGS_RELEASE, "-O2 -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG, "-g3 -ggdb -O0")
+
+# Dependencies
+find_package(Threads REQUIRED)
+
+find_library(MIRACL_LIBRARY libmiracl.a)
+if ((NOT MIRACL_LIBRARY) OR (NOT EXISTS ${MIRACL_LIBRARY}))
+    message(FATAL_ERROR "MIRACL library not found")
+else()
+    message(STATUS "Found MIRACL library: ${MIRACL_LIBRARY}")
+endif()
+find_library(MIRACL_AUX_LIBRARY libmiracl_aux.a)
+if ((NOT MIRACL_AUX_LIBRARY) OR (NOT EXISTS ${MIRACL_AUX_LIBRARY}))
+    message(FATAL_ERROR "MIRACL aux library not found")
+else()
+    message(STATUS "Found MIRACL aux library: ${MIRACL_AUX_LIBRARY}")
+endif()
+find_path(MIRACL_INCLUDE_DIR miracl_lib/miracl.h)
+if ((NOT MIRACL_INCLUDE_DIR) OR (NOT EXISTS ${MIRACL_INCLUDE_DIR}))
+    message(FATAL_ERROR "MIRACL include dir not found")
+else()
+    message(STATUS "Found MIRACL include dir: ${MIRACL_INCLUDE_DIR}")
+endif()
+find_path(OT_INCLUDE_DIR ot/maskingfunction.h)
+if ((NOT OT_INCLUDE_DIR) OR (NOT EXISTS ${OT_INCLUDE_DIR}))
+    message(FATAL_ERROR "OT include dir not found")
+else()
+    message(STATUS "Found OT include dir: ${OT_INCLUDE_DIR}")
+endif()
+
+
+set(ABY_SOURCES
+    src/abycore/aby/abyparty.cpp
+    src/abycore/aby/abysetup.cpp
+    src/abycore/circuit/abycircuit.cpp
+    src/abycore/circuit/arithmeticcircuits.cpp
+    src/abycore/circuit/booleancircuits.cpp
+    src/abycore/circuit/circuit.cpp
+    src/abycore/circuit/share.cpp
+    src/abycore/DGK/dgkparty.cpp
+    src/abycore/DJN/djnparty.cpp
+    src/abycore/sharing/arithsharing.cpp
+    src/abycore/sharing/boolsharing.cpp
+    src/abycore/sharing/sharing.cpp
+    src/abycore/sharing/yaoclientsharing.cpp
+    src/abycore/sharing/yaoserversharing.cpp
+    src/abycore/sharing/yaosharing.cpp
+    src/abycore/util/cbitvector.cpp
+    src/abycore/util/circular_queue.cpp
+    src/abycore/util/connection.cpp
+    src/abycore/util/dgk.cpp
+    src/abycore/util/djn.cpp
+    src/abycore/util/graycode.cpp
+    src/abycore/util/parse_options.cpp
+    src/abycore/util/powmod.cpp
+)
+
+
+add_library(aby ${ABY_SOURCES})
+# allow relative includes: #include "../miracl_lib/...h"
+target_include_directories(aby PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
+
+install(TARGETS aby
+    EXPORT ABY
+    RUNTIME DESTINATION "bin"
+    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+)
+
+install(DIRECTORY src/abycore DESTINATION include
+        FILES_MATCHING PATTERN "*.h")
