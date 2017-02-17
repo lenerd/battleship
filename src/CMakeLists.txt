@@ -22,26 +22,29 @@ endif()
 
 
 set(BATTLESHIP_SOURCES
-    board_component.cpp
-    board.cpp
-    board_impl.cpp
-    board_window.cpp
-    committer.cpp
-    dummy_connection.cpp
-    game_communicator.cpp
-    game.cpp
-    game_screen.cpp
-    hash_committer.cpp
-    message_window.cpp
-    naor_committer.cpp
-    ncurses_interface.cpp
-    ncurses_window.cpp
-    options.cpp
-    tcp_connection.cpp
-    user_interface.cpp
-    util.cpp
-    web_interface.cpp
-    websocket_connection.cpp
+    crypto/committer.cpp
+    crypto/hash_committer.cpp
+    crypto/naor_committer.cpp
+    game/board.cpp
+    game/game_communicator.cpp
+    game/game.cpp
+    misc/options.cpp
+    misc/util.cpp
+    network/dummy_connection.cpp
+    network/tcp_connection.cpp
+    ui/board_window.cpp
+    ui/game_screen.cpp
+    ui/message_window.cpp
+    ui/ncurses_interface.cpp
+    ui/ncurses_window.cpp
+    ui/user_interface.cpp
+    ui/web_interface.cpp
+    ui/websocket_connection.cpp
+)
+
+set(INCLUDES
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${Boost_INCLUDE_DIR} ${CMAKE_INCLUDE_PATH}
 )
 
 set(LIBRARIES
@@ -62,29 +65,26 @@ build_flatbuffers("${FBS_SCHEMAS}" "" flatbuffers_header ""
 
 add_library(battleship ${BATTLESHIP_SOURCES})
 add_dependencies(battleship flatbuffers_header)
-target_include_directories(battleship
-    PRIVATE ${Boost_INCLUDE_DIR} ${CMAKE_INCLUDE_PATH}
-)
+target_include_directories(battleship PRIVATE ${INCLUDES})
 
-add_executable(battleship.exe battleship.cpp)
-target_link_libraries(battleship.exe
-    battleship
-    ${LIBRARIES}
-)
+add_executable(battleship.exe game/battleship.cpp)
+target_include_directories(battleship.exe PRIVATE ${INCLUDES})
+target_link_libraries(battleship.exe battleship ${LIBRARIES})
 
 set(TEST_SOURCES
-    test.cpp
-    test_board.cpp
-    test_dummy_connection.cpp
-    test_game_communicator.cpp
-    test_committer.cpp
-    test_hash_committer.cpp
-    test_naor_committer.cpp
-    test_queue.cpp
-    test_misc.cpp
+    test/test.cpp
+    test/test_board.cpp
+    test/test_dummy_connection.cpp
+    test/test_game_communicator.cpp
+    test/test_committer.cpp
+    test/test_hash_committer.cpp
+    test/test_naor_committer.cpp
+    test/test_queue.cpp
+    test/test_misc.cpp
 )
 
 add_executable(test.exe ${TEST_SOURCES})
+target_include_directories(test.exe PRIVATE ${INCLUDES})
 target_link_libraries(test.exe
     battleship
     ${LIBRARIES}

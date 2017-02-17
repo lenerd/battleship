@@ -2,8 +2,8 @@
 #define COMMITTER_HPP
 
 #include <memory>
-#include "connection.hpp"
-#include "util.hpp"
+#include "network/connection.hpp"
+#include "misc/util.hpp"
 
 
 enum class CommitmentAlgorithm

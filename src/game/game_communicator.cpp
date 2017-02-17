@@ -1,8 +1,7 @@
 #include <cassert>
 #include <stdexcept>
-#include "game_generated.h"
 #include "game_communicator.hpp"
-#include "util.hpp"
+#include "game_generated.h"
 
 GameCommunicator::GameCommunicator(Conn_p conn)
     : conn_(conn)

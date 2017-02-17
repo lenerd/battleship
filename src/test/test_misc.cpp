@@ -1,7 +1,7 @@
 #include <sstream>
 #include <gtest/gtest.h>
-#include "options.hpp"
-#include "util.hpp"
+#include "misc/options.hpp"
+#include "misc/util.hpp"
 
 TEST(MiscTest, RandomBytes)
 {

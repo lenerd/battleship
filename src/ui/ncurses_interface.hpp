@@ -3,7 +3,6 @@
 
 #include <string>
 #include <memory>
-#include "board.hpp"
 #include "game_screen.hpp"
 #include "user_interface.hpp"
 

@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
 #include <gtest/gtest.h>
-#include "dummy_connection.hpp"
-#include "game_communicator.hpp"
+#include "game/game_communicator.hpp"
+#include "network/dummy_connection.hpp"
 
 class GameCommunicatorTest : public ::testing::Test
 {

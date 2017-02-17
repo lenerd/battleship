@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <nlohmann/json.hpp>
-#include "board.hpp"
 #include "web_interface.hpp"
 #include "websocket_connection.hpp"
 

@@ -1,7 +1,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include "options.hpp"
 #include "tcp_connection.hpp"
+#include "misc/options.hpp"
 
 using boost::asio::ip::tcp;
 

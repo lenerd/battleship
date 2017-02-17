@@ -2,7 +2,6 @@
 #include <memory>
 #include <ncurses.h>
 #include "game_screen.hpp"
-#include "board.hpp"
 #include "board_window.hpp"
 #include "message_window.hpp"
 

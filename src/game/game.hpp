@@ -3,9 +3,9 @@
 
 #include <memory>
 #include "board.hpp"
-#include "options.hpp"
 #include "game_communicator.hpp"
-#include "user_interface.hpp"
+#include "misc/options.hpp"
+#include "ui/user_interface.hpp"
 
 enum class Role;
 

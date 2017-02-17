@@ -2,11 +2,9 @@
 #include <functional>
 #include <iostream>
 #include <stdexcept>
-#include "game_communicator.hpp"
 #include "game.hpp"
-#include "options.hpp"
-#include "user_interface.hpp"
-#include "util.hpp"
+#include "ui/user_interface.hpp"
+#include "misc/util.hpp"
 
 
 Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn)

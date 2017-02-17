@@ -2,8 +2,7 @@
 #define DUMMY_CONNECTION_HPP
 
 #include "connection.hpp"
-#include "queue.hpp"
-#include "util.hpp"
+#include "misc/queue.hpp"
 
 class DummyConnection : public Connection
 {

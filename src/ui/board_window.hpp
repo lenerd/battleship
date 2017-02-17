@@ -3,8 +3,8 @@
 
 #include <memory>
 #include <ncurses.h>
-#include "board.hpp"
-#include "util.hpp"
+#include "game/board.hpp"
+#include "misc/util.hpp"
 #include "ncurses_window.hpp"
 
 

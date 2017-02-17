@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "board.hpp"
+#include "game/board.hpp"
 
 TEST(InitTest, BoardTest)
 {

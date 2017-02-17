@@ -4,7 +4,6 @@
 #include <cryptopp/sha3.h>
 #include "hash_committer.hpp"
 #include "commitment_generated.h"
-#include "util.hpp"
 
 
 Comm_p HashCommitter::send_commitment(bool value)

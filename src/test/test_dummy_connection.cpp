@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "dummy_connection.hpp"
+#include "network/dummy_connection.hpp"
 
 class DummyConnectionTest : public ::testing::Test
 {

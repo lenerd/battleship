@@ -1,7 +1,6 @@
 #include <cryptopp/aes.h>
 #include <cryptopp/modes.h>
 #include "naor_committer.hpp"
-#include "util.hpp"
 #include "commitment_generated.h"
 
 

@@ -3,9 +3,9 @@
 
 #include <memory>
 #include <string>
-#include "board.hpp"
-#include "options.hpp"
-#include "util.hpp"
+#include "game/board.hpp"
+#include "misc/options.hpp"
+#include "misc/util.hpp"
 
 class UserInterface
 {

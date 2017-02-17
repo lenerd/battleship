@@ -2,8 +2,8 @@
 #define GAME_COMMUNICATOR_HPP
 
 #include <functional>
-#include "connection.hpp"
-#include "util.hpp"
+#include "network/connection.hpp"
+#include "misc/util.hpp"
 
 class GameCommunicator
 {

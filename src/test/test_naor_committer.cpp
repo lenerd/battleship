@@ -1,9 +1,9 @@
 #include <future>
 #include <gtest/gtest.h>
-#include "committer.hpp"
-#include "dummy_connection.hpp"
-#include "naor_committer.hpp"
-#include "util.hpp"
+#include "crypto/committer.hpp"
+#include "crypto/naor_committer.hpp"
+#include "misc/util.hpp"
+#include "network/dummy_connection.hpp"
 
 template <typename T>
 class NaorCommitterTest : public ::testing::Test

@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-#include "board.hpp"
+#include "game/board.hpp"
 
 class BoardWindow;
 class MessageWindow;

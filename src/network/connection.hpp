@@ -2,7 +2,7 @@
 #define CONNECTION_HPP
 
 #include <memory>
-#include "util.hpp"
+#include "misc/util.hpp"
 
 class Connection
 {

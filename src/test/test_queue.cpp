@@ -1,7 +1,7 @@
 #include <future>
 #include <numeric>
 #include <gtest/gtest.h>
-#include "queue.hpp"
+#include "misc/queue.hpp"
 
 class QueueTest : public ::testing::Test
 {

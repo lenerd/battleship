@@ -2,10 +2,10 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
-#include "tcp_connection.hpp"
-#include "game.hpp"
-#include "user_interface.hpp"
-#include "options.hpp"
+#include "network/tcp_connection.hpp"
+#include "game/game.hpp"
+#include "ui/user_interface.hpp"
+#include "misc/options.hpp"
 
 
 namespace po = boost::program_options;

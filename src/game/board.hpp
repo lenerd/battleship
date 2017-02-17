@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include <boost/signals2.hpp>
-#include "util.hpp"
+#include "misc/util.hpp"
 
 
 class Board
