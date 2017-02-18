@@ -43,7 +43,7 @@ set(BATTLESHIP_SOURCES
 )
 
 set(INCLUDES
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/generated_includes
     ${Boost_INCLUDE_DIR} ${CMAKE_INCLUDE_PATH}
 )
 
@@ -65,10 +65,12 @@ build_flatbuffers("${FBS_SCHEMAS}" "" flatbuffers_header ""
 
 add_library(battleship ${BATTLESHIP_SOURCES})
 add_dependencies(battleship flatbuffers_header)
-target_include_directories(battleship PRIVATE ${INCLUDES})
+target_include_directories(battleship PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(battleship SYSTEM PRIVATE ${INCLUDES})
 
 add_executable(battleship.exe game/battleship.cpp)
-target_include_directories(battleship.exe PRIVATE ${INCLUDES})
+target_include_directories(battleship.exe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(battleship.exe SYSTEM PRIVATE ${INCLUDES})
 target_link_libraries(battleship.exe battleship ${LIBRARIES})
 
 set(TEST_SOURCES
@@ -84,7 +86,8 @@ set(TEST_SOURCES
 )
 
 add_executable(test.exe ${TEST_SOURCES})
-target_include_directories(test.exe PRIVATE ${INCLUDES})
+target_include_directories(test.exe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(test.exe SYSTEM PRIVATE ${INCLUDES})
 target_link_libraries(test.exe
     battleship
     ${LIBRARIES}

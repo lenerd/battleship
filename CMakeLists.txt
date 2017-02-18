@@ -13,13 +13,9 @@ set(Battleship_DEFAULT_ARGS
 )
 file(MAKE_DIRECTORY ${Battleship_INSTALL_PREFIX})
 
-find_package(Boost REQUIRED COMPONENTS program_options)
-find_package(Curses REQUIRED)
-
 # build external dependencies
 add_subdirectory(extern)
 
-# add_subdirectory(src)
 include(ExternalProject)
 ExternalProject_Add(battleship
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/src
@@ -28,6 +24,7 @@ ExternalProject_Add(battleship
         -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}
         -DDEPENDENCY_PREFIX:PATH=${Battleship_INSTALL_PREFIX}
+        -DCMAKE_CXX_COMPILER:PATH=${CMAKE_CXX_COMPILER}
 )
 add_dependencies(battleship
     flatbuffers
