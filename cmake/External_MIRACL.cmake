@@ -1,28 +1,23 @@
-execute_process(
-    COMMAND uname -m
-    COMMAND tr -d '\n'
-    OUTPUT_VARIABLE ARCHITECTURE
+configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/MIRACL.CMakeLists.txt.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/MIRACL.CMakeLists.txt"
+    @ONLY
 )
-
-if("${ARCHITECTURE}" STREQUAL "x86_64")
-    set(MIRACL_MAKE "linux64")
-else()
-    set(MIRACL_MAKE "linux")
-endif()
 
 ExternalProject_Add(MIRACL
     SOURCE_DIR "${PROJECT_SOURCE_DIR}/extern/MIRACL"
     INSTALL_DIR "${Battleship_INSTALL_PREFIX}"
-    CONFIGURE_COMMAND find "<SOURCE_DIR>/" -type d -name ".git" -prune -o -type f -exec cp {} "<BINARY_DIR>/" "$<SEMICOLON>"
-    COMMAND sed -i -e "s/^rm /rm -f /" "<BINARY_DIR>/${MIRACL_MAKE}"
-
-    BUILD_COMMAND bash "./${MIRACL_MAKE}"
-    COMMAND find "<BINARY_DIR>/" -type f -name "*.o" -exec ar rc miracl_aux.a {} "$<SEMICOLON>"
-
-    INSTALL_COMMAND mkdir -p "<INSTALL_DIR>/include/miracl_lib"
-    COMMAND find "<BINARY_DIR>/" -type f -name "*.h" -exec cp {} "<INSTALL_DIR>/include/miracl_lib/" "$<SEMICOLON>"
-    COMMAND mkdir -p "<INSTALL_DIR>/lib"
-    COMMAND cp "<BINARY_DIR>/miracl.a" "<INSTALL_DIR>/lib/libmiracl.a"
-    COMMAND cp "<BINARY_DIR>/miracl_aux.a" "<INSTALL_DIR>/lib/libmiracl_aux.a"
-    COMMAND mkdir -p "<INSTALL_DIR>/include/dummy_include_dir"
+    PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_BINARY_DIR}/MIRACL.CMakeLists.txt"
+        "<TMP_DIR>/CMakeLists.txt"
+    COMMAND find "<SOURCE_DIR>/" -type d -name ".git" -prune -o -type f -exec cp --preserve=timestamps {} "<TMP_DIR>/" "$<SEMICOLON>"
+    COMMAND cmake -E copy_if_different "<TMP_DIR>/mirdef.h64" "<TMP_DIR>/mirdef.h"
+    COMMAND cmake -E copy_if_different "<TMP_DIR>/mrmuldv.g64" "<TMP_DIR>/mrmuldv.c"
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND cmake
+        -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
+        -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        "<TMP_DIR>"
 )
+

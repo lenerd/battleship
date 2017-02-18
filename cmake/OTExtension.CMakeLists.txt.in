@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0)
 
 project(OTExtension)
 
+option(BUILD_EXE "Build executables" OFF)
+
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 set(CMAKE_CXX_FLAGS_DEBUG "-g3 -ggdb")
 
@@ -14,11 +16,11 @@ if ((NOT MIRACL_LIBRARY) OR (NOT EXISTS ${MIRACL_LIBRARY}))
 else()
     message(STATUS "Found MIRACL library: ${MIRACL_LIBRARY}")
 endif()
-find_library(MIRACL_AUX_LIBRARY libmiracl_aux.a)
-if ((NOT MIRACL_AUX_LIBRARY) OR (NOT EXISTS ${MIRACL_AUX_LIBRARY}))
-    message(FATAL_ERROR "MIRACL aux library not found")
+find_library(MIRACL_CXX_LIBRARY libmiracl_cxx.a)
+if ((NOT MIRACL_CXX_LIBRARY) OR (NOT EXISTS ${MIRACL_CXX_LIBRARY}))
+    message(FATAL_ERROR "MIRACL cxx library not found")
 else()
-    message(STATUS "Found MIRACL aux library: ${MIRACL_AUX_LIBRARY}")
+    message(STATUS "Found MIRACL cxx library: ${MIRACL_CXX_LIBRARY}")
 endif()
 find_path(MIRACL_INCLUDE_DIR miracl_lib/miracl.h)
 if ((NOT MIRACL_INCLUDE_DIR) OR (NOT EXISTS ${MIRACL_INCLUDE_DIR}))
@@ -58,26 +60,24 @@ add_library(otextension ${OTEXT_SOURCES})
 # allow relative includes: #include "../miracl_lib/...h"
 target_include_directories(otextension PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
 
-set(LIBRARIES
-    otextension
-    ${MIRACL_AUX_LIBRARY} ${MIRACL_LIBRARY}
-    Threads::Threads ssl crypto gmp gmpxx
-)
+if (BUILD_EXE)
+    set(LIBRARIES
+        otextension
+        ${MIRACL_CXX_LIBRARY} ${MIRACL_LIBRARY}
+        Threads::Threads ssl crypto gmp gmpxx
+    )
 
-add_executable(ot.exe mains/otmain.cpp)
-target_include_directories(ot.exe PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
-target_link_libraries(ot.exe ${LIBRARIES})
+    add_executable(ot.exe mains/otmain.cpp)
+    target_include_directories(ot.exe PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
+    target_link_libraries(ot.exe ${LIBRARIES})
 
-add_executable(test.exe mains/test.cpp)
-target_link_libraries(test.exe ${LIBRARIES})
-target_include_directories(test.exe PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
+    add_executable(test.exe mains/test.cpp)
+    target_link_libraries(test.exe ${LIBRARIES})
+    target_include_directories(test.exe PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
 
-install(TARGETS otextension
-    EXPORT OTExtension
-    RUNTIME DESTINATION "bin"
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib"
-)
+endif (BUILD_EXE)
+
+install(TARGETS otextension DESTINATION "lib")
 
 install(FILES ${OTEXT_HEADER} DESTINATION "include/ot")
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ot DESTINATION include

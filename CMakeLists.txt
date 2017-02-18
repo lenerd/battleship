@@ -34,4 +34,5 @@ add_dependencies(battleship
     nlohmann_json
     Beast
     Crypto++
+    ABY
 )
