@@ -9,9 +9,11 @@ set(CMAKE_MODULE_PATH
 set(CMAKE_INCLUDE_PATH ${DEPENDENCY_PREFIX}/include)
 set(CMAKE_LIBRARY_PATH ${DEPENDENCY_PREFIX}/lib ${DEPENDENCY_PREFIX}/lib64)
 
+# Dependencies
 find_package(Boost REQUIRED COMPONENTS program_options system)
 find_package(Curses REQUIRED)
 find_package(Threads REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(GTest)
 find_library(CRYPTO++_LIBRARY libcryptopp.a)
 if ((NOT CRYPTO++_LIBRARY) OR (NOT EXISTS ${CRYPTO++_LIBRARY}))
@@ -19,9 +21,57 @@ if ((NOT CRYPTO++_LIBRARY) OR (NOT EXISTS ${CRYPTO++_LIBRARY}))
 else()
     message(STATUS "Found Crypto++: ${CRYPTO++_LIBRARY}")
 endif()
+find_library(GMP_LIBRARY gmp)
+if ((NOT GMP_LIBRARY) OR (NOT EXISTS ${GMP_LIBRARY}))
+    message(FATAL_ERROR "GMP not found")
+else()
+    message(STATUS "Found GMP: ${GMP_LIBRARY}")
+endif()
+find_library(GMPXX_LIBRARY gmpxx)
+if ((NOT GMPXX_LIBRARY) OR (NOT EXISTS ${GMPXX_LIBRARY}))
+    message(FATAL_ERROR "GMPXX not found")
+else()
+    message(STATUS "Found GMPXX: ${GMPXX_LIBRARY}")
+endif()
+find_path(MIRACL_INCLUDE_DIR miracl_lib/miracl.h)
+if ((NOT MIRACL_INCLUDE_DIR) OR (NOT EXISTS ${MIRACL_INCLUDE_DIR}))
+    message(FATAL_ERROR "MIRACL include dir not found")
+else()
+    message(STATUS "Found MIRACL include dir: ${MIRACL_INCLUDE_DIR}")
+endif()
+find_library(ABY_LIBRARY libaby.a)
+if ((NOT ABY_LIBRARY) OR (NOT EXISTS ${ABY_LIBRARY}))
+    message(FATAL_ERROR "ABY not found")
+else()
+    message(STATUS "Found ABY: ${ABY_LIBRARY}")
+endif()
+# find_library(OT_LIBRARY libotextension.a)
+# if ((NOT OT_LIBRARY) OR (NOT EXISTS ${OT_LIBRARY}))
+#     message(FATAL_ERROR "OTExtension not found")
+# else()
+#     message(STATUS "Found OTExtension: ${OT_LIBRARY}")
+# endif()
+find_library(MIRACL_LIBRARY libmiracl.a)
+if ((NOT MIRACL_LIBRARY) OR (NOT EXISTS ${MIRACL_LIBRARY}))
+    message(FATAL_ERROR "MIRACL not found")
+else()
+    message(STATUS "Found MIRACL: ${MIRACL_LIBRARY}")
+endif()
+find_library(MIRACL_CXX_LIBRARY libmiracl_cxx.a)
+if ((NOT MIRACL_CXX_LIBRARY) OR (NOT EXISTS ${MIRACL_CXX_LIBRARY}))
+    message(FATAL_ERROR "MIRACL_CXX not found")
+else()
+    message(STATUS "Found MIRACL_CXX: ${MIRACL_CXX_LIBRARY}")
+endif()
+
+set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wshadow -Weffc++")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
 
 
 set(BATTLESHIP_SOURCES
+    circuits/aby_party_connection.cpp
+    circuits/example_decider.cpp
+    circuits/trivial_decider.cpp
     crypto/committer.cpp
     crypto/hash_committer.cpp
     crypto/naor_committer.cpp
@@ -43,6 +93,7 @@ set(BATTLESHIP_SOURCES
 )
 
 set(INCLUDES
+    ${MIRACL_INCLUDE_DIR}/dummy_include_dir
     ${CMAKE_CURRENT_BINARY_DIR}/generated_includes
     ${Boost_INCLUDE_DIR} ${CMAKE_INCLUDE_PATH}
 )
@@ -52,6 +103,11 @@ set(LIBRARIES
     Threads::Threads
     ${CURSES_LIBRARIES}
     ${CRYPTO++_LIBRARY}
+    ${ABY_LIBRARY}
+    ${MIRACL_CXX_LIBRARY} ${MIRACL_LIBRARY}
+    ${GMP_LIBRARY} ${GMPXX_LIBRARY}
+    Threads::Threads
+    OpenSSL::SSL OpenSSL::Crypto
 )
 
 # generating flatbuffers header files
@@ -83,6 +139,8 @@ set(TEST_SOURCES
     test/test_naor_committer.cpp
     test/test_queue.cpp
     test/test_misc.cpp
+    test/test_example_decider.cpp
+    test/test_trivial_decider.cpp
 )
 
 add_executable(test.exe ${TEST_SOURCES})
