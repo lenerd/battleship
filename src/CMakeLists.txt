@@ -70,6 +70,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
 
 set(BATTLESHIP_SOURCES
     circuits/aby_party_connection.cpp
+    circuits/battleship_decider.cpp
     circuits/example_decider.cpp
     circuits/trivial_decider.cpp
     crypto/committer.cpp
@@ -139,6 +140,7 @@ set(TEST_SOURCES
     test/test_naor_committer.cpp
     test/test_queue.cpp
     test/test_misc.cpp
+    test/test_battleship_decider.cpp
     test/test_example_decider.cpp
     test/test_trivial_decider.cpp
 )
