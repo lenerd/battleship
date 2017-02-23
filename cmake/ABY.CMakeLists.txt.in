@@ -4,12 +4,19 @@ project(ABY)
 
 option(BUILD_EXE "Build executables" OFF)
 
-set(CMAKE_CXX_FLAGS_RELEASE, "-O2 -march=native")
-set(CMAKE_CXX_FLAGS_DEBUG, "-g3 -ggdb -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "-g3 -ggdb -O0")
 
 # Dependencies
 find_package(Threads REQUIRED)
+find_package(OpenSSL REQUIRED)
 
+find_path(MIRACL_INCLUDE_DIR miracl_lib/miracl.h)
+if ((NOT MIRACL_INCLUDE_DIR) OR (NOT EXISTS ${MIRACL_INCLUDE_DIR}))
+    message(FATAL_ERROR "MIRACL include dir not found")
+else()
+    message(STATUS "Found MIRACL include dir: ${MIRACL_INCLUDE_DIR}")
+endif()
 find_library(MIRACL_LIBRARY libmiracl.a)
 if ((NOT MIRACL_LIBRARY) OR (NOT EXISTS ${MIRACL_LIBRARY}))
     message(FATAL_ERROR "MIRACL library not found")
@@ -22,17 +29,17 @@ if ((NOT MIRACL_CXX_LIBRARY) OR (NOT EXISTS ${MIRACL_CXX_LIBRARY}))
 else()
     message(STATUS "Found MIRACL cxx library: ${MIRACL_CXX_LIBRARY}")
 endif()
-find_path(MIRACL_INCLUDE_DIR miracl_lib/miracl.h)
-if ((NOT MIRACL_INCLUDE_DIR) OR (NOT EXISTS ${MIRACL_INCLUDE_DIR}))
-    message(FATAL_ERROR "MIRACL include dir not found")
+find_library(GMP_LIBRARY gmp)
+if ((NOT GMP_LIBRARY) OR (NOT EXISTS ${GMP_LIBRARY}))
+    message(FATAL_ERROR "GMP not found")
 else()
-    message(STATUS "Found MIRACL include dir: ${MIRACL_INCLUDE_DIR}")
+    message(STATUS "Found GMP: ${GMP_LIBRARY}")
 endif()
-find_path(OT_INCLUDE_DIR ot/maskingfunction.h)
-if ((NOT OT_INCLUDE_DIR) OR (NOT EXISTS ${OT_INCLUDE_DIR}))
-    message(FATAL_ERROR "OT include dir not found")
+find_library(GMPXX_LIBRARY gmpxx)
+if ((NOT GMPXX_LIBRARY) OR (NOT EXISTS ${GMPXX_LIBRARY}))
+    message(FATAL_ERROR "GMPXX not found")
 else()
-    message(STATUS "Found OT include dir: ${OT_INCLUDE_DIR}")
+    message(STATUS "Found GMPXX: ${GMPXX_LIBRARY}")
 endif()
 
 
@@ -46,6 +53,22 @@ set(ABY_SOURCES
     src/abycore/circuit/share.cpp
     src/abycore/DGK/dgkparty.cpp
     src/abycore/DJN/djnparty.cpp
+    src/abycore/ot/alsz-ot-ext-rec.cpp
+    src/abycore/ot/alsz-ot-ext-snd.cpp
+    src/abycore/ot/asharov-lindell.cpp
+    src/abycore/ot/iknp-ot-ext-rec.cpp
+    src/abycore/ot/iknp-ot-ext-snd.cpp
+    src/abycore/ot/kk-ot-ext-rec.cpp
+    src/abycore/ot/kk-ot-ext-snd.cpp
+    src/abycore/ot/naor-pinkas.cpp
+    src/abycore/ot/naor-pinkas_noro.cpp
+    src/abycore/ot/nnob-ot-ext-rec.cpp
+    src/abycore/ot/nnob-ot-ext-snd.cpp
+    src/abycore/ot/ot-ext.cpp
+    src/abycore/ot/ot-ext-rec.cpp
+    src/abycore/ot/ot-ext-snd.cpp
+    src/abycore/ot/pvwddh.cpp
+    src/abycore/ot/simpleot.cpp
     src/abycore/sharing/arithsharing.cpp
     src/abycore/sharing/boolsharing.cpp
     src/abycore/sharing/sharing.cpp
@@ -56,6 +79,11 @@ set(ABY_SOURCES
     src/abycore/util/circular_queue.cpp
     src/abycore/util/connection.cpp
     src/abycore/util/dgk.cpp
+    src/abycore/util/crypto/crypto.cpp
+    src/abycore/util/crypto/ecc-pk-crypto.cpp
+    src/abycore/util/crypto/gmp-pk-crypto.cpp
+    src/abycore/util/crypto/intrin_sequential_enc8.cpp
+    src/abycore/util/crypto/TedKrovetzAesNiWrapperC.cpp
     src/abycore/util/djn.cpp
     src/abycore/util/graycode.cpp
     src/abycore/util/parse_options.cpp
@@ -67,12 +95,19 @@ add_library(aby ${ABY_SOURCES})
 # allow relative includes: #include "../miracl_lib/...h"
 target_include_directories(aby PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
 
-install(TARGETS aby
-    EXPORT ABY
-    RUNTIME DESTINATION "bin"
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib"
-)
+install(TARGETS aby DESTINATION "lib")
 
 install(DIRECTORY src/abycore DESTINATION include
         FILES_MATCHING PATTERN "*.h")
+
+if(BUILD_EXE)
+    set(LIBRARIES
+        ${MIRACL_CXX_LIBRARY} ${MIRACL_LIBRARY}
+        ${GMP_LIBRARY} ${GMPXX_LIBRARY}
+        Threads::Threads
+        OpenSSL::SSL OpenSSL::Crypto
+    )
+    add_executable(sha1_test.exe src/examples/sha1/sha1_test.cpp src/examples/sha1/common/sha1_circuit.cpp)
+    target_include_directories(sha1_test.exe PRIVATE ${MIRACL_INCLUDE_DIR}/dummy_include_dir)
+    target_link_libraries(sha1_test.exe aby ${LIBRARIES})
+endif(BUILD_EXE)

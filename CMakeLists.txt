@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Battleship CXX)
+project(Battleship)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -25,6 +25,7 @@ ExternalProject_Add(battleship
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}
         -DDEPENDENCY_PREFIX:PATH=${Battleship_INSTALL_PREFIX}
         -DCMAKE_CXX_COMPILER:PATH=${CMAKE_CXX_COMPILER}
+        -DCMAKE_C_COMPILER:PATH=${CMAKE_C_COMPILER}
 )
 add_dependencies(battleship
     flatbuffers

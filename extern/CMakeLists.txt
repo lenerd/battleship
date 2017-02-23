@@ -11,4 +11,4 @@ include(External_OTExtension)
 include(External_ABY)
 
 add_dependencies(OTExtension MIRACL)
-add_dependencies(ABY OTExtension MIRACL)
+add_dependencies(ABY MIRACL)

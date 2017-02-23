@@ -45,12 +45,6 @@ if ((NOT ABY_LIBRARY) OR (NOT EXISTS ${ABY_LIBRARY}))
 else()
     message(STATUS "Found ABY: ${ABY_LIBRARY}")
 endif()
-# find_library(OT_LIBRARY libotextension.a)
-# if ((NOT OT_LIBRARY) OR (NOT EXISTS ${OT_LIBRARY}))
-#     message(FATAL_ERROR "OTExtension not found")
-# else()
-#     message(STATUS "Found OTExtension: ${OT_LIBRARY}")
-# endif()
 find_library(MIRACL_LIBRARY libmiracl.a)
 if ((NOT MIRACL_LIBRARY) OR (NOT EXISTS ${MIRACL_LIBRARY}))
     message(FATAL_ERROR "MIRACL not found")
@@ -66,6 +60,8 @@ endif()
 
 set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wshadow -Weffc++")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 
 set(BATTLESHIP_SOURCES
@@ -153,6 +149,11 @@ target_link_libraries(test.exe
     ${LIBRARIES}
     GTest::GTest GTest::Main
 )
+
+add_executable(test_bd.exe circuits/test_bd.cpp)
+target_include_directories(test_bd.exe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(test_bd.exe SYSTEM PRIVATE ${INCLUDES})
+target_link_libraries(test_bd.exe battleship ${LIBRARIES})
 
 install(TARGETS battleship.exe DESTINATION ".")
 install(TARGETS test.exe DESTINATION ".")
