@@ -60,17 +60,19 @@ endif()
 
 set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wshadow -Weffc++")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
-# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
-# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 
 set(BATTLESHIP_SOURCES
     circuits/aby_party_connection.cpp
     circuits/battleship_decider.cpp
     circuits/example_decider.cpp
+    circuits/keccak.cpp
     circuits/trivial_decider.cpp
     crypto/committer.cpp
     crypto/hash_committer.cpp
+    crypto/keccak.cpp
     crypto/naor_committer.cpp
     game/board.cpp
     game/game_communicator.cpp
@@ -127,12 +129,15 @@ target_include_directories(battleship.exe SYSTEM PRIVATE ${INCLUDES})
 target_link_libraries(battleship.exe battleship ${LIBRARIES})
 
 set(TEST_SOURCES
+    crypto/keccak_test_vectors.cpp
     test/test.cpp
     test/test_board.cpp
     test/test_dummy_connection.cpp
     test/test_game_communicator.cpp
     test/test_committer.cpp
     test/test_hash_committer.cpp
+    test/test_keccak.cpp
+    test/test_keccak_circuit.cpp
     test/test_naor_committer.cpp
     test/test_queue.cpp
     test/test_misc.cpp

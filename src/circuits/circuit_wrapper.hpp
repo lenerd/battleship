@@ -1,8 +1,9 @@
 #ifndef CIRCUIT_WRAPPER_HPP
 #define CIRCUIT_WRAPPER_HPP
 
-#include <cassert>
+#include <algorithm>
 #include <bitset>
+#include <cassert>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -102,6 +103,16 @@ public:
     share_p PutMUXGate(share_p ina, share_p inb, share_p sel)
     {
         return share_p(circ_->PutMUXGate(ina.get(), inb.get(), sel.get()));
+    }
+
+    share_p PutROTLGate(share_p in, size_t k)
+    {
+        size_t bitlength{in->get_bitlength()};
+        auto wires{in->get_wires()};
+        k %= bitlength;
+        auto new_first{std::prev(wires.end(), static_cast<ptrdiff_t>(k))};
+        std::rotate(wires.begin(), new_first, wires.end());
+        return std::make_shared<boolshare>(wires, circ_);
     }
 
 
