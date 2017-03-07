@@ -9,6 +9,44 @@ TEST(MiscTest, RandomBytes)
     ASSERT_EQ(val.size(), 42);
 }
 
+TEST(MiscTest, HexlifyTest)
+{
+    bytes_t input{0x1d, 0x0d, 0x35, 0x3f, 0x65, 0xf3, 0x9e, 0xfe, 0xbc, 0x62,
+        0x15, 0x7f, 0x99, 0x7e, 0x3e, 0x71};
+    std::string output("1d0d353f65f39efebc62157f997e3e71");
+    std::string output_upper("1D0D353F65F39EFEBC62157F997E3E71");
+    ASSERT_EQ(hexlify(input), output);
+    ASSERT_EQ(hexlify(input, true), output_upper);
+
+    input = {0xd7, 0x78, 0x0a, 0x66, 0x6e, 0x36, 0xc4, 0x8e, 0x2d, 0xea, 0xd0,
+        0xf6, 0x0a, 0x4d, 0x46, 0xa8};
+    output = "d7780a666e36c48e2dead0f60a4d46a8";
+    output_upper = "D7780A666E36C48E2DEAD0F60A4D46A8";
+    ASSERT_EQ(hexlify(input), output);
+    ASSERT_EQ(hexlify(input, true), output_upper);
+}
+
+TEST(MiscTest, UnhexlifyTest)
+{
+    bytes_t output{0x1d, 0x0d, 0x35, 0x3f, 0x65, 0xf3, 0x9e, 0xfe, 0xbc, 0x62,
+        0x15, 0x7f, 0x99, 0x7e, 0x3e, 0x71};
+    std::string input("1d0d353f65f39efebc62157f997e3e71");
+    std::string input_upper("1D0D353F65F39EFEBC62157F997E3E71");
+    std::string input_mixed("1d0d353f65f39efeBC62157F997E3E71");
+    ASSERT_EQ(unhexlify(input), output);
+    ASSERT_EQ(unhexlify(input_upper), output);
+    ASSERT_EQ(unhexlify(input_mixed), output);
+
+    output = {0xd7, 0x78, 0x0a, 0x66, 0x6e, 0x36, 0xc4, 0x8e, 0x2d, 0xea, 0xd0,
+        0xf6, 0x0a, 0x4d, 0x46, 0xa8};
+    input = "d7780a666e36c48e2dead0f60a4d46a8";
+    input_upper = "D7780A666E36C48E2DEAD0F60A4D46A8";
+    input_mixed = "d7780a666e36c48e2DEAD0F60A4D46A8";
+    ASSERT_EQ(unhexlify(input), output);
+    ASSERT_EQ(unhexlify(input_upper), output);
+    ASSERT_EQ(unhexlify(input_mixed), output);
+}
+
 TEST(MiscTest, StringToBits)
 {
     std::string bitstr("10001011""11101111");

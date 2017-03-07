@@ -35,4 +35,7 @@ bytes_t bits_to_bytes(std::bitset<len> bits)
     return bytes;
 }
 
+std::string hexlify(const bytes_t &data, bool upper=false);
+bytes_t unhexlify(const std::string &hex);
+
 #endif // UTIL_HPP
