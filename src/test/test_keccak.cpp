@@ -2,11 +2,8 @@
 #include <gtest/gtest.h>
 #include "crypto/keccak.hpp"
 #include "crypto/keccak_test_vectors.hpp"
+#include "misc/util.hpp"
 
-// TEST(KeccakTest, KeccakTest)
-// {
-//     FAIL();
-// }
 
 TEST(KeccakTest, ThetaTest)
 {
@@ -61,4 +58,15 @@ TEST(KeccakTest, PermutationTest)
         Keccak::permutation(state);
         ASSERT_EQ(state.data, std::get<1>(tuple));
     }
+}
+
+TEST(KeccakTest, Padding)
+{
+    auto input{random_bytes(23)};
+    auto padded{Keccak::pad(input, 32)};
+    ASSERT_EQ(padded.size() % 32, 0);
+
+    input = random_bytes(47);
+    padded = Keccak::pad(input, 32);
+    ASSERT_EQ(padded.size() % 32, 0);
 }

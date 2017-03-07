@@ -235,7 +235,7 @@ bytes_t Keccak::keccak(const bytes_t &message)
 bytes_t Keccak::pad(const bytes_t &message, size_t blocksize, uint8_t d)
 {
     bytes_t padded(message);
-    size_t pad_size = blocksize - ((message.size() + 1) % blocksize);
+    size_t pad_size = blocksize - (message.size() % blocksize);
     padded.resize(message.size() + pad_size);
     auto start_of_padding{std::next(padded.begin(), static_cast<ssize_t>(message.size()))};
     std::fill(start_of_padding, padded.end(), 0x00);
