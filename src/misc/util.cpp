@@ -61,3 +61,11 @@ bytes_t unhexlify(const std::string &hex)
     }
     return data;
 }
+
+
+bytes_t string_to_bytes(const std::string &str)
+{
+    bytes_t bytes(str.size());
+    std::copy(str.cbegin(), str.cend(), bytes.begin());
+    return bytes;
+}

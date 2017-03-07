@@ -9,7 +9,7 @@ TEST(MiscTest, RandomBytes)
     ASSERT_EQ(val.size(), 42);
 }
 
-TEST(MiscTest, HexlifyTest)
+TEST(MiscTest, Hexlify)
 {
     bytes_t input{0x1d, 0x0d, 0x35, 0x3f, 0x65, 0xf3, 0x9e, 0xfe, 0xbc, 0x62,
         0x15, 0x7f, 0x99, 0x7e, 0x3e, 0x71};
@@ -26,7 +26,7 @@ TEST(MiscTest, HexlifyTest)
     ASSERT_EQ(hexlify(input, true), output_upper);
 }
 
-TEST(MiscTest, UnhexlifyTest)
+TEST(MiscTest, Unhexlify)
 {
     bytes_t output{0x1d, 0x0d, 0x35, 0x3f, 0x65, 0xf3, 0x9e, 0xfe, 0xbc, 0x62,
         0x15, 0x7f, 0x99, 0x7e, 0x3e, 0x71};
@@ -45,6 +45,13 @@ TEST(MiscTest, UnhexlifyTest)
     ASSERT_EQ(unhexlify(input), output);
     ASSERT_EQ(unhexlify(input_upper), output);
     ASSERT_EQ(unhexlify(input_mixed), output);
+}
+
+TEST(MiscTest, StringToBytes)
+{
+    std::string input = "abc";
+    bytes_t output{0x61, 0x62, 0x63};
+    ASSERT_EQ(string_to_bytes(input), output);
 }
 
 TEST(MiscTest, StringToBits)
