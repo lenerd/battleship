@@ -1,107 +1,98 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include "keccak.hpp"
 
-Keccak::State::State(permutation_fun permutation, size_t capacity_bytes)
-    : permutation(permutation), capacity_bytes(capacity_bytes)
+Keccak::Keccak(size_t capacity_bits, uint8_t d, size_t output_bits)
+        : output_bytes(output_bits / 8),
+          capacity_bytes(capacity_bits / 8),
+          rate_bytes((1600 - capacity_bits) / 8),
+          d(d),
+          state_(permutation, capacity_bytes)
 {
-    assert(capacity_bytes < data.size() * sizeof(uint64_t));
-    rate_bytes = data.size() * sizeof(uint64_t) - capacity_bytes;
-    data.fill(0x0000000000000000);
-}
-
-Keccak::State::State(permutation_fun permutation, size_t capacity_bytes, const bytes_t &initial)
-    : permutation(permutation), capacity_bytes(capacity_bytes)
-{
-    assert(capacity_bytes < data.size() * sizeof(uint64_t));
-    rate_bytes = data.size() * sizeof(uint64_t) - capacity_bytes;
-    assert(initial.size() == data.size() * sizeof(uint64_t));
-    std::copy(initial.cbegin(), initial.cend(), reinterpret_cast<uint8_t*>(data.data()));
-}
-
-Keccak::State::State(permutation_fun permutation, size_t capacity_bytes, const std::vector<uint64_t> &initial)
-    : permutation(permutation), capacity_bytes(capacity_bytes)
-{
-    assert(capacity_bytes < data.size() * sizeof(uint64_t));
-    rate_bytes = data.size() * sizeof(uint64_t) - capacity_bytes;
-    assert(initial.size() == data.size());
-    std::copy(initial.cbegin(), initial.cend(), data.begin());
-}
-
-Keccak::State::State(permutation_fun permutation, size_t capacity_bytes, const std::array<uint64_t, 25> &initial)
-    : permutation(permutation), capacity_bytes(capacity_bytes)
-{
-    assert(capacity_bytes < data.size() * sizeof(uint64_t));
-    rate_bytes = data.size() * sizeof(uint64_t) - capacity_bytes;
-    std::copy(initial.cbegin(), initial.cend(), data.begin());
-}
-
-Keccak::State::State(const State &other)
-    : permutation(other.permutation), capacity_bytes(other.capacity_bytes),
-    rate_bytes(other.rate_bytes), data(other.data) {}
-
-Keccak::State::State(State &&other)
-    : permutation(other.permutation), capacity_bytes(other.capacity_bytes),
-    rate_bytes(other.rate_bytes), data(std::move(other.data)) {}
-
-Keccak::State& Keccak::State::operator=(const State &other)
-{
-    permutation = other.permutation;
-    capacity_bytes = other.capacity_bytes;
-    rate_bytes = other.rate_bytes;
-    data = other.data;
-    return *this;
-}
-
-Keccak::State& Keccak::State::operator=(State &&other)
-{
-    permutation = other.permutation;
-    capacity_bytes = other.capacity_bytes;
-    rate_bytes = other.rate_bytes;
-    data = std::move(other.data);
-    return *this;
-}
-
-void Keccak::State::absorb(const bytes_t &input)
-{
-    assert(input.size() == rate_bytes);
-    absorb(input.begin());
-}
-
-void Keccak::State::absorb(bytes_t::const_iterator in_first)
-{
-    uint8_t* data_ptr = reinterpret_cast<uint8_t*>(data.data());
-    std::transform(data_ptr, data_ptr + rate_bytes, in_first, data.data(),
-            [] (auto a, auto b) { return a ^ b; });
-    permutation(*this);
+    assert(capacity_bits % 8 == 0);
+    assert(output_bits % 8 == 0);
+    assert(capacity_bytes + rate_bytes == 200);
+    input_buffer.reserve(rate_bytes);
 }
 
 
-bytes_t Keccak::State::squeeze()
+Keccak Keccak::SHA3_256()
 {
-    bytes_t output(rate_bytes);
-    squeeze(output.begin());
+    return Keccak(512, 0x06, 256);
+}
+
+Keccak Keccak::SHA3_512()
+{
+    return Keccak(1024, 0x06, 512);
+}
+
+
+void Keccak::update(const bytes_t &input)
+{
+    assert(!finalized);
+
+    if (input_buffer.size() + input.size() < rate_bytes)
+    {
+        input_buffer.insert(input_buffer.cend(),
+                            input.cbegin(),
+                            input.cend());
+        return;
+        
+    }
+
+    auto prefix_len{rate_bytes - input_buffer.size()};
+    auto suffix_len{(input.size() - prefix_len) % rate_bytes};
+    auto next_block_it{input.cbegin() + static_cast<bytes_t::difference_type>(prefix_len)};
+    auto suffix_it{input.cend() - static_cast<bytes_t::difference_type>(suffix_len)};
+
+    if (input_buffer.empty())
+    {
+        next_block_it = input.cbegin();
+    }
+    else
+    {
+        input_buffer.insert(input_buffer.cend(),
+                            input.cbegin(),
+                            next_block_it);
+        state_.absorb(input_buffer.cbegin());
+        input_buffer.clear();
+    }
+    for (; next_block_it != suffix_it;
+         next_block_it += static_cast<bytes_t::difference_type>(rate_bytes))
+    {
+        state_.absorb(next_block_it);
+    }
+
+    input_buffer.insert(input_buffer.cbegin(), suffix_it, input.cend());
+}
+
+
+bytes_t Keccak::finalize()
+{
+    assert(!finalized);
+    finalized = true;
+    bytes_t output(output_bytes);
+
+    // pad content of input_buffer and absorb it
+    assert(input_buffer.size() < rate_bytes);
+    state_.absorb(pad(input_buffer, rate_bytes, d));
+
+    // squeeze output_bytes
+    auto full_blocks{output_bytes / rate_bytes};
+    auto extra_bytes{output_bytes % rate_bytes};
+    auto last_full_block{std::next(output.begin(), static_cast<bytes_t::difference_type>(full_blocks))};
+    for (auto it{output.begin()}; it != last_full_block; it += static_cast<bytes_t::difference_type>(rate_bytes)) 
+    {
+        state_.squeeze(it);
+    }
+    auto tmp{state_.squeeze()};
+    std::copy(tmp.cbegin(), std::next(tmp.cbegin(), static_cast<bytes_t::difference_type>(extra_bytes)), last_full_block);
+
     return output;
 }
 
-void Keccak::State::squeeze(bytes_t::iterator out_first)
-{
-    uint8_t* data_ptr = reinterpret_cast<uint8_t*>(data.data());
-    std::copy(data_ptr, data_ptr + rate_bytes, out_first);
-    permutation(*this);
-}
-
-uint64_t& Keccak::State::operator()(size_t x, size_t y)
-{
-    assert(x < 5 && y < 5);
-    return data[x + y*5];
-}
-const uint64_t& Keccak::State::operator()(size_t x, size_t y) const
-{
-    assert(x < 5 && y < 5);
-    return data[x + y*5];
-}
 
 uint64_t rotate(uint64_t n, size_t k)
 {
@@ -211,25 +202,6 @@ void Keccak::permutation(State &state)
     {
         round(state, i);
     }
-}
-
-
-bytes_t Keccak::keccak(const bytes_t &message)
-{
-    auto padded{pad(message, rate_bytes)};
-    for (auto block_it{padded.cbegin()}; block_it != padded.cend();
-            block_it += static_cast<bytes_t::difference_type>(rate_bytes))
-    {
-        state_.absorb(block_it);
-    }
-    bytes_t output(output_bytes);
-    assert(output_bytes % rate_bytes == 0);
-    for (auto block_it{output.begin()}; block_it != output.end();
-            block_it += static_cast<bytes_t::difference_type>(rate_bytes))
-    {
-        state_.squeeze(block_it);
-    }
-    return output;
 }
 
 bytes_t Keccak::pad(const bytes_t &message, size_t blocksize, uint8_t d)

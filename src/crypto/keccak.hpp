@@ -39,10 +39,12 @@ public:
         std::array<uint64_t, 25> data;
     };
 
-    Keccak(size_t capacity=576, size_t rate=1024)
-        : capacity_bytes(capacity / 8), rate_bytes(rate / 8), state_(permutation, capacity_bytes) {}
+    Keccak(size_t capacity_bits=576, uint8_t d=0x01, size_t output_bits=0);
+    static Keccak SHA3_256();
+    static Keccak SHA3_512();
 
-    bytes_t keccak(const bytes_t &message);
+    void update(const bytes_t& input);
+    bytes_t finalize();
 
     static bytes_t pad(const bytes_t &message, size_t blocksize, uint8_t d=0x01);
 
@@ -55,14 +57,17 @@ public:
     static void iota(State &state, size_t round);
 
     size_t output_bytes = 32;
-    size_t capacity_bytes;
-    size_t rate_bytes;
+    size_t capacity_bytes = 72;
+    size_t rate_bytes = 128;
     uint8_t d = 0x01;
+
+    bool finalized = false;
 
     const static std::array<uint64_t, 24> round_constants;
     const static std::array<std::array<size_t, 5>, 5> rotation_offsets;
 
 private:
+    bytes_t input_buffer;
     State state_;
 };
 

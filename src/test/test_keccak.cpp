@@ -70,3 +70,27 @@ TEST(KeccakTest, Padding)
     padded = Keccak::pad(input, 32);
     ASSERT_EQ(padded.size() % 32, 0);
 }
+
+TEST(KeccakTest, SHA3_256_Test)
+{
+    auto test_vectors{sha3_256_vectors()};
+    for (auto &pair : test_vectors)
+    {
+        auto keccak{Keccak::SHA3_256()};
+        keccak.update(pair.first);
+        auto digest{keccak.finalize()};
+        ASSERT_EQ(digest, pair.second);
+    }
+}
+
+TEST(KeccakTest, SHA3_512_Test)
+{
+    auto test_vectors{sha3_512_vectors()};
+    for (auto &pair : test_vectors)
+    {
+        auto keccak{Keccak::SHA3_512()};
+        keccak.update(pair.first);
+        auto digest{keccak.finalize()};
+        ASSERT_EQ(digest, pair.second);
+    }
+}
