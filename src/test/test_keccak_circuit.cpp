@@ -4,7 +4,7 @@
 #include "test_keccak_helper.hpp"
 
 
-TEST(KeccakCircuitTest, ThetaTest)
+TEST(KeccakCircuitTest, Theta)
 {
     auto test_vectors{theta_vectors()};
     for (auto &tuple : test_vectors)
@@ -16,7 +16,7 @@ TEST(KeccakCircuitTest, ThetaTest)
     }
 }
 
-TEST(KeccakCircuitTest, RhoPiTest)
+TEST(KeccakCircuitTest, RhoPi)
 {
     auto test_vectors{rho_pi_vectors()};
     for (auto &tuple : test_vectors)
@@ -28,7 +28,7 @@ TEST(KeccakCircuitTest, RhoPiTest)
     }
 }
 
-TEST(KeccakCircuitTest, ChiTest)
+TEST(KeccakCircuitTest, Chi)
 {
     auto test_vectors{chi_vectors()};
     for (auto &tuple : test_vectors)
@@ -40,7 +40,7 @@ TEST(KeccakCircuitTest, ChiTest)
     }
 }
 
-TEST(KeccakCircuitTest, IotaTest)
+TEST(KeccakCircuitTest, Iota)
 {
     auto test_vectors{iota_vectors()};
     for (auto &tuple : test_vectors)
@@ -52,7 +52,7 @@ TEST(KeccakCircuitTest, IotaTest)
     }
 }
 
-TEST(KeccakCircuitTest, PermutationTest)
+TEST(KeccakCircuitTest, Permutation)
 {
     auto test_vectors{permutation_vectors()};
     for (auto &tuple : test_vectors)
@@ -60,5 +60,41 @@ TEST(KeccakCircuitTest, PermutationTest)
         auto input{std::get<0>(tuple)};
         auto output{eval_permutation(build_permutation, input)};
         ASSERT_EQ(output, std::get<1>(tuple));
+    }
+}
+
+TEST(KeccakCircuitTest, SHA3_256)
+{
+    auto test_vectors{sha3_256_vectors()};
+    size_t i{0};
+    for (auto &pair : test_vectors)
+    {
+        auto input{pair.first};
+        std::cerr << "test vector " << i << ", input size " << input.size() << "\n";
+
+        if (input.size() > 10000)
+            continue;
+
+        auto digest{eval_hash(build_sha3_256, input)};
+        ASSERT_EQ(digest, pair.second);
+        ++i;
+    }
+}
+
+TEST(KeccakCircuitTest, SHA3_512)
+{
+    auto test_vectors{sha3_512_vectors()};
+    size_t i{0};
+    for (auto &pair : test_vectors)
+    {
+        auto input{pair.first};
+
+        if (input.size() > 10000)
+            continue;
+        std::cerr << "test vector " << i << ", input size " << input.size() << "\n";
+
+        auto digest{eval_hash(build_sha3_512, input)};
+        ASSERT_EQ(digest, pair.second);
+        ++i;
     }
 }

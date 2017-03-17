@@ -6,8 +6,10 @@
 #include <cassert>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <type_traits>
 #include <abycore/circuit/booleancircuits.h>
+#include <abycore/circuit/share.h>
 #include "misc/util.hpp"
 
 using share_p = std::shared_ptr<share>;
@@ -116,6 +118,7 @@ public:
     }
 
 
+    // debug gates
     share_p PutPrintValueGate(share_p in, std::string infostring)
     {
         return share_p(circ_->PutPrintValueGate(in.get(), infostring));
@@ -134,7 +137,62 @@ public:
         assert(index <= std::numeric_limits<uint32_t>::max());
         return share_p(share->get_wire_ids_as_share(static_cast<uint32_t>(index)));
     }
-private:
+
+
+    // share conversion
+    std::vector<share_p> split_share(share_p in, size_t bits_per_share)
+    {
+        assert(in->get_bitlength() % bits_per_share == 0);
+        size_t num_shares{in->get_bitlength() / bits_per_share};
+        std::vector<share_p> out(num_shares);
+        auto in_wires{in->get_wires()};
+        for (size_t i{0}; i < num_shares; ++i)
+        {
+            std::vector<uint32_t> wires(in_wires.cbegin() + static_cast<ptrdiff_t>(i*bits_per_share),
+                                        in_wires.cbegin() + static_cast<ptrdiff_t>((i+1)*bits_per_share));
+
+            out[i] = std::make_shared<boolshare>(wires, circ_);
+        }
+        return out;
+    }
+
+    share_p combine_shares(std::vector<share_p> in)
+    {
+        size_t num_bits{std::accumulate(in.cbegin(), in.cend(), size_t{0},
+                [] (size_t acc, share_p s) -> size_t
+                { return acc + s->get_bitlength(); })};
+        assert(num_bits <= 64);
+        std::vector<uint32_t> wires;
+        for (auto &share : in)
+        {
+            auto in_wires{share->get_wires()};
+            wires.insert(wires.cend(), in_wires.cbegin(), in_wires.cend());
+        }
+        return std::make_shared<boolshare>(wires, circ_);
+    }
+
+
+    std::vector<share_p> bytes_to_shares(const bytes_t &in)
+    {
+        std::vector<share_p> out(in.size());
+        std::transform(in.begin(), in.end(), out.begin(),
+                [this] (uint8_t b) -> share_p
+                { return this->PutCONSGate(b, 8); });
+        return out;
+    }
+
+    bytes_t shares_to_bytes(const std::vector<share_p> &in)
+    {
+        bytes_t out(in.size());
+        std::transform(in.begin(), in.end(), out.begin(),
+            [] (share_p b) -> uint8_t
+            {
+                assert(b->get_bitlength() == 8);
+                return b->template get_clear_value<uint8_t>();
+            });
+        return out;
+    }
+// private:
     BooleanCircuit* circ_;
 };
 
