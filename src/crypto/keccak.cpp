@@ -82,7 +82,7 @@ bytes_t Keccak::finalize()
     // squeeze output_bytes
     auto full_blocks{output_bytes / rate_bytes};
     auto extra_bytes{output_bytes % rate_bytes};
-    auto last_full_block{std::next(output.begin(), static_cast<bytes_t::difference_type>(full_blocks))};
+    auto last_full_block{std::next(output.begin(), static_cast<bytes_t::difference_type>(full_blocks * rate_bytes))};
     for (auto it{output.begin()}; it != last_full_block; it += static_cast<bytes_t::difference_type>(rate_bytes)) 
     {
         state_.squeeze(it);
@@ -207,7 +207,7 @@ void Keccak::permutation(State &state)
 bytes_t Keccak::pad(const bytes_t &message, size_t blocksize, uint8_t d)
 {
     bytes_t padded(message);
-    size_t pad_size = blocksize - (message.size() % blocksize);
+    size_t pad_size{blocksize - (message.size() % blocksize)};
     padded.resize(message.size() + pad_size);
     auto start_of_padding{std::next(padded.begin(), static_cast<ssize_t>(message.size()))};
     std::fill(start_of_padding, padded.end(), 0x00);
