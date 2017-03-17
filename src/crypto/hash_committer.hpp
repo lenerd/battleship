@@ -40,11 +40,11 @@ private:
     virtual bytes_t hash_function(const bytes_t&, const bytes_t&) const final override;
 };
 
-class SHA3_HashCommitter : public HashCommitter
+class SHA3_256_HashCommitter : public HashCommitter
 {
 public:
-    SHA3_HashCommitter(Conn_p conn) : HashCommitter(conn) {}
-    virtual ~SHA3_HashCommitter() = default;
+    SHA3_256_HashCommitter(Conn_p conn) : HashCommitter(conn) {}
+    virtual ~SHA3_256_HashCommitter() = default;
 private:
     virtual bytes_t hash_function(const bytes_t&, const bytes_t&) const final override;
 };

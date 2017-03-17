@@ -55,6 +55,6 @@ REGISTER_TYPED_TEST_CASE_P(
         MakeVerify);
 
 
-typedef ::testing::Types<SHA1_HashCommitter, SHA3_HashCommitter> HashCommitterImplementations;
+typedef ::testing::Types<SHA1_HashCommitter, SHA3_256_HashCommitter> HashCommitterImplementations;
 
 INSTANTIATE_TYPED_TEST_CASE_P(HashCommitterTestInstance, HashCommitterTest, HashCommitterImplementations);

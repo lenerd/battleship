@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <memory>
 #include <cryptopp/sha.h>
 #include <cryptopp/sha3.h>
@@ -115,7 +116,7 @@ bytes_t SHA1_HashCommitter::hash_function(const bytes_t &data, const bytes_t &pa
     return digest;
 }
 
-bytes_t SHA3_HashCommitter::hash_function(const bytes_t &data, const bytes_t &padding) const
+bytes_t SHA3_256_HashCommitter::hash_function(const bytes_t &data, const bytes_t &padding) const
 {
     CryptoPP::SHA3_256 sha3;
     bytes_t digest(sha3.DigestSize());
