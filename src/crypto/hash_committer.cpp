@@ -87,7 +87,7 @@ HashComm_p HashCommitter::make_commitment(bool value) const
 {
     auto comm{std::make_shared<HashCommitment>()};
     comm->padding = random_bytes(16);
-    bytes_t byte_value{value ? uint8_t{0xff} : uint8_t{0x00}};
+    bytes_t byte_value{value ? uint8_t{0x01} : uint8_t{0x00}};
     comm->hash = hash_function(byte_value, comm->padding);
     comm->committed = true;
     comm->value = value;
@@ -100,7 +100,7 @@ bool HashCommitter::verify_commitment(const Comm_p &comm) const
     assert(!hash_comm->hash.empty());
     assert(!hash_comm->padding.empty());
 
-    bytes_t byte_value{comm->value ? uint8_t{0xff} : uint8_t{0x00}};
+    bytes_t byte_value{comm->value ? uint8_t{0x01} : uint8_t{0x00}};
     auto comp{hash_function(byte_value, hash_comm->padding)};
     return std::equal(hash_comm->hash.cbegin(), hash_comm->hash.cend(),
                       comp.cbegin(), comp.cend());
