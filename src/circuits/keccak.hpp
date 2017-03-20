@@ -24,6 +24,9 @@ public:
 
     void absorb(const std::vector<share_p> &input);
     void absorb(std::vector<share_p>::const_iterator first);
+
+    std::vector<share_p> read();
+    void read(std::vector<share_p>::iterator out_first);
     std::vector<share_p> squeeze();
     void squeeze(std::vector<share_p>::iterator out_first);
 

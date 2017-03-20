@@ -86,14 +86,14 @@ void StateShare::absorb(std::vector<share_p>::const_iterator first)
 }
 
 
-std::vector<share_p> StateShare::squeeze()
+std::vector<share_p> StateShare::read()
 {
     std::vector<share_p> output(rate_bytes);
-    squeeze(output.begin());
+    read(output.begin());
     return output;
 }
 
-void StateShare::squeeze(std::vector<share_p>::iterator out_first)
+void StateShare::read(std::vector<share_p>::iterator out_first)
 {
     std::vector<share_p> byte_shares;
     byte_shares.reserve(rate_bytes);
@@ -105,6 +105,18 @@ void StateShare::squeeze(std::vector<share_p>::iterator out_first)
     std::copy(byte_shares.begin(),
               byte_shares.begin() + static_cast<ptrdiff_t>(rate_bytes),
               out_first);
+}
+
+std::vector<share_p> StateShare::squeeze()
+{
+    std::vector<share_p> output(rate_bytes);
+    squeeze(output.begin());
+    return output;
+}
+
+void StateShare::squeeze(std::vector<share_p>::iterator out_first)
+{
+    read(out_first);
     permutation(circ, *this, 0);
 }
 
@@ -249,7 +261,7 @@ std::vector<share_p> build_keccak(CircuitW_p circ, std::vector<share_p> input_sh
         state.squeeze(it);
         std::cerr << "after squeeze: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
     }
-    auto tmp{state.squeeze()};
+    auto tmp{state.read()};
     std::copy(tmp.cbegin(), std::next(tmp.cbegin(), static_cast<ptrdiff_t>(extra_bytes)), last_full_block);
         std::cerr << "sha2 end: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
     return output;
