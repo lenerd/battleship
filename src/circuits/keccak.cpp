@@ -200,7 +200,6 @@ void build_permutation(CircuitW_p circ, StateShare &state, size_t)
     {
         build_round(circ, state, i);
     }
-    std::cerr << "build_permutation: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
 }
 
 
@@ -236,9 +235,9 @@ std::vector<share_p> build_keccak(CircuitW_p circ, std::vector<share_p> input_sh
     size_t rate_bytes{200 - capacity_bytes};
     size_t output_bytes{output_bits / 8};
     auto padded_shares{build_padding(circ, input_shares, rate_bytes, d)};
-    std::cerr << "after padding: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
+    // std::cerr << "after padding: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
     StateShare state{circ, build_permutation, capacity_bytes};
-    std::cerr << "after state init: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
+    // std::cerr << "after state init: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
 
     assert(padded_shares.size() % state.rate_bytes == 0);
 
@@ -247,7 +246,7 @@ std::vector<share_p> build_keccak(CircuitW_p circ, std::vector<share_p> input_sh
     for (; next_block != padded_shares.cend(); next_block += static_cast<ptrdiff_t>(state.rate_bytes))
     {
         state.absorb(next_block);
-        std::cerr << "after absorb: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
+        // std::cerr << "after absorb: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
     }
     // squeeze
     std::vector<share_p> output(output_bytes);
@@ -259,11 +258,11 @@ std::vector<share_p> build_keccak(CircuitW_p circ, std::vector<share_p> input_sh
          it += static_cast<ptrdiff_t>(state.rate_bytes))
     {
         state.squeeze(it);
-        std::cerr << "after squeeze: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
+        // std::cerr << "after squeeze: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
     }
     auto tmp{state.read()};
     std::copy(tmp.cbegin(), std::next(tmp.cbegin(), static_cast<ptrdiff_t>(extra_bytes)), last_full_block);
-        std::cerr << "sha2 end: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
+        // std::cerr << "sha2 end: " << circ->circ_->m_cCircuit->GetGateHead() << " gates\n";
     return output;
 }
 
