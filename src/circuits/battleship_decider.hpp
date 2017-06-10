@@ -7,6 +7,8 @@
 #include "trivial_decider.hpp"
 
 enum class Role;
+class CircuitWrapper;
+using CircuitW_p = std::shared_ptr<CircuitWrapper>;
 class share;
 using share_p = std::shared_ptr<share>;
 
@@ -23,6 +25,9 @@ private:
     Role role_;
     APC_p aby_;
 };
+
+
+share_p build_circuit(CircuitW_p circ, std::vector<share_p> sv_input);
 
 
 #endif // BATTLESHIP_DECIDER_HPP

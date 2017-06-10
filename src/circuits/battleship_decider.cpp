@@ -217,13 +217,12 @@ share_p board_empty(CircuitW_p circ, share_grid &board)
     return reduce_and(circ, cells_empty);
 }
 
-share_p BattleshipDecider::build_circuit(std::vector<share_p> sv_input)
+share_p build_circuit(CircuitW_p circ, std::vector<share_p> sv_input)
 {
     assert(sv_input.size() == 100);
     std::unordered_map<uint8_t, uint8_t> target_nums{
         {2, 4}, {3, 3}, {4, 2}, {5, 1}
     };
-    auto circ{aby_->get_circuit()};
     auto board{prepare_board(circ, sv_input)};
     // debug_board(circ, board);
 
@@ -244,4 +243,10 @@ share_p BattleshipDecider::build_circuit(std::vector<share_p> sv_input)
 
     // return circ->PutCONSGate(0U, 1);
     return circ->PutANDGate(all_nums_correct, all_empty);
+}
+
+
+share_p BattleshipDecider::build_circuit(std::vector<share_p> sv_input)
+{
+    return ::build_circuit(aby_->get_circuit(), sv_input);
 }
