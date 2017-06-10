@@ -23,7 +23,8 @@ ABYPartyConnection::ABYPartyConnection(Role role, std::string address, uint16_t 
             32, // bitlength
             1, // threads
             MT_OT, // multiplication tripe generator
-            4000000, // maxgates
+            // 4000000, // maxgates
+            40000000, // maxgates
             port
     );
 
