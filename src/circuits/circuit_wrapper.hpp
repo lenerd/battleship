@@ -30,6 +30,22 @@ public:
         return shares;
     }
 
+    std::vector<share_p> PutINGates(const bytes_t &in, e_role role)
+    {
+        return PutINGates(in, 8, role);
+    }
+
+    template <typename T,
+              typename = std::enable_if_t<std::is_unsigned<T>::value>>
+    std::vector<share_p> PutINGates(const std::vector<T> &input, size_t size, e_role role)
+    {
+        std::vector<share_p> output(input.size());
+        std::transform(input.begin(), input.end(), output.begin(),
+                [this, size, role] (uint8_t in) -> share_p
+                { return this->PutINGate(in, static_cast<uint32_t>(size), role); });
+        return output;
+    }
+
     template <typename T,
               typename = std::enable_if_t<std::is_unsigned<T>::value>>
     share_p PutINGate(T input, size_t size, e_role role)
@@ -115,6 +131,22 @@ public:
         auto new_first{std::prev(wires.end(), static_cast<ptrdiff_t>(k))};
         std::rotate(wires.begin(), new_first, wires.end());
         return std::make_shared<boolshare>(wires, circ_);
+    }
+
+    share_p PutReduceANDGates(std::vector<share_p> ins)
+    {
+        return PutReduceGates([this] (share_p ina, share_p inb) -> share_p
+                { return this->PutANDGate(ina, inb); }, ins);
+    }
+
+    share_p PutReduceGates(std::function<share_p(share_p, share_p)> PutGate,
+                           std::vector<share_p> ins)
+    {
+        assert(!ins.empty());
+        auto result{std::accumulate(ins.cbegin() + 1, ins.cend(), ins[0],
+                    [PutGate] (share_p acc, share_p val) -> share_p
+                    { return PutGate(acc, val); })};
+        return result;
     }
 
 
