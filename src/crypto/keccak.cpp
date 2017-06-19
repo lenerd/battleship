@@ -1,10 +1,14 @@
+#ifndef KECCAK_CPP
+#define KECCAK_CPP
+
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
 #include "keccak.hpp"
 
-Keccak::Keccak(size_t capacity_bits, uint8_t d, size_t output_bits)
+template <typename Word>
+Keccak<Word>::Keccak(size_t capacity_bits, uint8_t d, size_t output_bits)
         : output_bytes(output_bits / 8),
           capacity_bytes(capacity_bits / 8),
           rate_bytes((1600 - capacity_bits) / 8),
@@ -18,18 +22,8 @@ Keccak::Keccak(size_t capacity_bits, uint8_t d, size_t output_bits)
 }
 
 
-Keccak Keccak::SHA3_256()
-{
-    return Keccak(512, 0x06, 256);
-}
-
-Keccak Keccak::SHA3_512()
-{
-    return Keccak(1024, 0x06, 512);
-}
-
-
-void Keccak::update(const bytes_t &input)
+template <typename Word>
+void Keccak<Word>::update(const bytes_t &input)
 {
     assert(!finalized);
 
@@ -69,7 +63,8 @@ void Keccak::update(const bytes_t &input)
 }
 
 
-bytes_t Keccak::finalize()
+template <typename Word>
+bytes_t Keccak<Word>::finalize()
 {
     assert(!finalized);
     finalized = true;
@@ -93,37 +88,23 @@ bytes_t Keccak::finalize()
     return output;
 }
 
+template <typename Word>
+const std::array<uint64_t, 24> Keccak<Word>::round_constants;
+template <typename Word>
+const std::array<std::array<size_t, 5>, 5> Keccak<Word>::rotation_offsets;
 
-uint64_t rotate(uint64_t n, size_t k)
+template <typename Word>
+Word rotate(Word n, size_t k)
 {
-    return (n << k) | (n >> (64 - k));
+    return (n << k) | (n >> (sizeof(Word)*8 - k));
 }
 
 
-const std::array<uint64_t, 24> Keccak::round_constants{{
-    0x0000000000000001, 0x0000000000008082, 0x800000000000808A,
-    0x8000000080008000, 0x000000000000808B, 0x0000000080000001,
-    0x8000000080008081, 0x8000000000008009, 0x000000000000008A,
-    0x0000000000000088, 0x0000000080008009, 0x000000008000000A,
-    0x000000008000808B, 0x800000000000008B, 0x8000000000008089,
-    0x8000000000008003, 0x8000000000008002, 0x8000000000000080,
-    0x000000000000800A, 0x800000008000000A, 0x8000000080008081,
-    0x8000000000008080, 0x0000000080000001, 0x8000000080008008
-}};
-
-const std::array<std::array<size_t, 5>, 5> Keccak::rotation_offsets{{
-    {{0, 1, 62, 28, 27}},
-    {{36, 44, 6, 55, 20}},
-    {{3, 10, 43, 25, 39}},
-    {{41, 45, 15, 21, 8}},
-    {{18, 2, 61, 56, 14}}
-}};
-
-
-void Keccak::theta(KeccakState<uint64_t> &state)
+template <typename Word>
+void Keccak<Word>::theta(KeccakState<Word> &state)
 {
-    std::array<uint64_t, 5> C;
-    uint64_t D;
+    std::array<Word, 5> C;
+    Word D;
 
     for (size_t x{0}; x < 5; ++x)
     {
@@ -140,11 +121,12 @@ void Keccak::theta(KeccakState<uint64_t> &state)
     }
 }
 
-void Keccak::rho_pi(KeccakState<uint64_t> &state)
+template <typename Word>
+void Keccak<Word>::rho_pi(KeccakState<Word> &state)
 {
     size_t x = 1;
     size_t y = 0;
-    uint64_t current{state(x, y)};
+    Word current{state(x, y)};
     for (size_t t{0}; t < 24; ++t)
     {
         {
@@ -164,15 +146,16 @@ void Keccak::rho_pi(KeccakState<uint64_t> &state)
     // {
     //     for (size_t y{0}; y < 5; ++y)
     //     {
-    //         state(y, (2*x+3*y) % 5) = rotate(tmp(x, y), Keccak::rotation_offsets[x][y]);
+    //         state(y, (2*x+3*y) % 5) = rotate(tmp(x, y), Keccak<Word>::rotation_offsets[x][y]);
     //     }
     // }
 }
 
 
-void Keccak::chi(KeccakState<uint64_t> &state)
+template <typename Word>
+void Keccak<Word>::chi(KeccakState<Word> &state)
 {
-    KeccakState<uint64_t> tmp{state};
+    KeccakState<Word> tmp{state};
     for (size_t x{0}; x < 5; ++x)
     {
         for (size_t y{0}; y < 5; ++y)
@@ -182,12 +165,14 @@ void Keccak::chi(KeccakState<uint64_t> &state)
     }
 }
 
-void Keccak::iota(KeccakState<uint64_t> &state, size_t round)
+template <typename Word>
+void Keccak<Word>::iota(KeccakState<Word> &state, size_t round)
 {
-    state(0, 0) ^= Keccak::round_constants[round];
+    state(0, 0) ^= Keccak<Word>::round_constants[round];
 }
 
-void Keccak::round(KeccakState<uint64_t> &state, uint64_t round)
+template <typename Word>
+void Keccak<Word>::round(KeccakState<Word> &state, uint64_t round)
 {
     theta(state);
     rho_pi(state);
@@ -196,7 +181,8 @@ void Keccak::round(KeccakState<uint64_t> &state, uint64_t round)
 }
 
 
-void Keccak::permutation(KeccakState<uint64_t> &state)
+template <typename Word>
+void Keccak<Word>::permutation(KeccakState<Word> &state)
 {
     for (size_t i{0}; i < 24; ++i)
     {
@@ -204,7 +190,8 @@ void Keccak::permutation(KeccakState<uint64_t> &state)
     }
 }
 
-bytes_t Keccak::pad(const bytes_t &message, size_t blocksize, uint8_t d)
+template <typename Word>
+bytes_t Keccak<Word>::pad(const bytes_t &message, size_t blocksize, uint8_t d)
 {
     bytes_t padded(message);
     size_t pad_size{blocksize - (message.size() % blocksize)};
@@ -216,3 +203,16 @@ bytes_t Keccak::pad(const bytes_t &message, size_t blocksize, uint8_t d)
 
     return padded;
 }
+
+
+inline Keccak<uint64_t> SHA3_256()
+{
+    return Keccak<uint64_t>(512, 0x06, 256);
+}
+
+inline Keccak<uint64_t> SHA3_512()
+{
+    return Keccak<uint64_t>(1024, 0x06, 512);
+}
+
+#endif // KECCAK_CPP

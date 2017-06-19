@@ -181,7 +181,7 @@ void build_chi(CircuitW_p circ, StateShare &state, size_t)
 
 void build_iota(CircuitW_p circ, StateShare &state, size_t round)
 {
-    auto cons{circ->PutCONSGate(Keccak::round_constants[round], 64)};
+    auto cons{circ->PutCONSGate(Keccak<uint64_t>::round_constants[round], 64)};
     state(0, 0) = circ->PutXORGate(state(0, 0), cons);
 }
 

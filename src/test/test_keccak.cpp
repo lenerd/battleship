@@ -11,7 +11,7 @@ TEST(KeccakTest, Theta)
     for (auto &tuple : test_vectors)
     {
         KeccakState<uint64_t> state{[] (auto) {}, 128, std::get<0>(tuple)};
-        Keccak::theta(state);
+        Keccak<uint64_t>::theta(state);
         ASSERT_EQ(state.data, std::get<1>(tuple));
     }
 }
@@ -22,7 +22,7 @@ TEST(KeccakTest, RhoPi)
     for (auto &tuple : test_vectors)
     {
         KeccakState<uint64_t> state{[] (auto) {}, 128, std::get<0>(tuple)};
-        Keccak::rho_pi(state);
+        Keccak<uint64_t>::rho_pi(state);
         ASSERT_EQ(state.data, std::get<1>(tuple));
     }
 }
@@ -33,7 +33,7 @@ TEST(KeccakTest, Chi)
     for (auto &tuple : test_vectors)
     {
         KeccakState<uint64_t> state{[] (auto) {}, 128, std::get<0>(tuple)};
-        Keccak::chi(state);
+        Keccak<uint64_t>::chi(state);
         ASSERT_EQ(state.data, std::get<1>(tuple));
     }
 }
@@ -44,7 +44,7 @@ TEST(KeccakTest, Iota)
     for (auto &tuple : test_vectors)
     {
         KeccakState<uint64_t> state{[] (auto) {}, 128, std::get<0>(tuple)};
-        Keccak::iota(state, std::get<2>(tuple));
+        Keccak<uint64_t>::iota(state, std::get<2>(tuple));
         ASSERT_EQ(state.data, std::get<1>(tuple));
     }
 }
@@ -55,7 +55,7 @@ TEST(KeccakTest, Permutation)
     for (auto &tuple : test_vectors)
     {
         KeccakState<uint64_t> state{[] (auto) {}, 128, std::get<0>(tuple)};
-        Keccak::permutation(state);
+        Keccak<uint64_t>::permutation(state);
         ASSERT_EQ(state.data, std::get<1>(tuple));
     }
 }
@@ -65,7 +65,7 @@ TEST(KeccakTest, Padding)
     auto input{random_bytes(23)};
     bytes_t expected_padding{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80};
-    auto padded{Keccak::pad(input, 32)};
+    auto padded{Keccak<uint64_t>::pad(input, 32)};
     ASSERT_EQ(padded.size() % 32, 0);
     ASSERT_EQ(padded.size(), 32);
     ASSERT_EQ(bytes_t(padded.cbegin() + 23, padded.cend()), expected_padding);
@@ -73,7 +73,7 @@ TEST(KeccakTest, Padding)
     input = random_bytes(47);
     expected_padding = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80};
-    padded = Keccak::pad(input, 32);
+    padded = Keccak<uint64_t>::pad(input, 32);
     ASSERT_EQ(padded.size() % 32, 0);
     ASSERT_EQ(padded.size(), 64);
     ASSERT_EQ(bytes_t(padded.cbegin() + 47, padded.cend()), expected_padding);
@@ -82,14 +82,14 @@ TEST(KeccakTest, Padding)
     expected_padding = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80};
-    padded = Keccak::pad(input, 32);
+    padded = Keccak<uint64_t>::pad(input, 32);
     ASSERT_EQ(padded.size() % 32, 0);
     ASSERT_EQ(padded.size(), 64);
     ASSERT_EQ(bytes_t(padded.cbegin() + 32, padded.cend()), expected_padding);
 
     input = random_bytes(31);
     expected_padding = {0x81};
-    padded = Keccak::pad(input, 32);
+    padded = Keccak<uint64_t>::pad(input, 32);
     ASSERT_EQ(padded.size() % 32, 0);
     ASSERT_EQ(padded.size(), 32);
     ASSERT_EQ(bytes_t(padded.cbegin() + 31, padded.cend()), expected_padding);
@@ -100,7 +100,7 @@ TEST(KeccakTest, SHA3_256)
     auto test_vectors{sha3_256_vectors()};
     for (auto &pair : test_vectors)
     {
-        auto keccak{Keccak::SHA3_256()};
+        auto keccak{SHA3_256()};
         keccak.update(pair.first);
         auto digest{keccak.finalize()};
         ASSERT_EQ(digest, pair.second);
@@ -112,7 +112,7 @@ TEST(KeccakTest, SHA3_512)
     auto test_vectors{sha3_512_vectors()};
     for (auto &pair : test_vectors)
     {
-        auto keccak{Keccak::SHA3_512()};
+        auto keccak{SHA3_512()};
         keccak.update(pair.first);
         auto digest{keccak.finalize()};
         ASSERT_EQ(digest, pair.second);
