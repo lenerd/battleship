@@ -1,6 +1,7 @@
 #ifndef CIRCUIT_KECCAK_HPP
 #define CIRCUIT_KECCAK_HPP
 
+#include <functional>
 #include <memory>
 #include <vector>
 

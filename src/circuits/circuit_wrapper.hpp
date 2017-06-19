@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cassert>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <numeric>
