@@ -4,6 +4,13 @@
 #include "crypto/keccak_test_vectors.hpp"
 #include "misc/util.hpp"
 
+TEST(KeccakTest, RoundConstants)
+{
+    ASSERT_EQ(Keccak<uint64_t>::round_constants, round_constants_64);
+    ASSERT_EQ(Keccak<uint32_t>::round_constants, round_constants_32);
+    ASSERT_EQ(Keccak<uint16_t>::round_constants, round_constants_16);
+    // ASSERT_EQ(Keccak<uint8_t>::round_constants, round_constants_8);
+}
 
 TEST(KeccakTest, Theta)
 {
@@ -117,4 +124,11 @@ TEST(KeccakTest, SHA3_512)
         auto digest{keccak.finalize()};
         ASSERT_EQ(digest, pair.second);
     }
+}
+
+TEST(KeccakTest, Keccak400)
+{
+    auto keccak{Keccak400()};
+    keccak.update(random_bytes(16));
+    auto digest{keccak.finalize()};
 }
