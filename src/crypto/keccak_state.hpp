@@ -68,6 +68,11 @@ public:
      * Chosen permutation.
      */
     permutation_fun permutation;
+
+    /**
+     * Size of the state in bytes.
+     */
+    const static size_t state_bytes = 25 * sizeof(Word);
     /**
      * Number of capacity bytes.
      */

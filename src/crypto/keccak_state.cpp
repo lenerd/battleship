@@ -10,8 +10,8 @@ template <typename Word>
 KeccakState<Word>::KeccakState(permutation_fun permutation, size_t capacity_bytes)
     : permutation(permutation), capacity_bytes(capacity_bytes)
 {
-    assert(capacity_bytes < data.size() * sizeof(Word));
-    rate_bytes = data.size() * sizeof(Word) - capacity_bytes;
+    assert(capacity_bytes < state_bytes);
+    rate_bytes = state_bytes - capacity_bytes;
     data.fill(0x0000000000000000);
 }
 
@@ -19,9 +19,9 @@ template <typename Word>
 KeccakState<Word>::KeccakState(permutation_fun permutation, size_t capacity_bytes, const bytes_t &initial)
     : permutation(permutation), capacity_bytes(capacity_bytes)
 {
-    assert(capacity_bytes < data.size() * sizeof(Word));
-    rate_bytes = data.size() * sizeof(Word) - capacity_bytes;
-    assert(initial.size() == data.size() * sizeof(Word));
+    assert(capacity_bytes < state_bytes);
+    rate_bytes = state_bytes - capacity_bytes;
+    assert(initial.size() == state_bytes);
     std::copy(initial.cbegin(), initial.cend(), reinterpret_cast<uint8_t*>(data.data()));
 }
 
@@ -29,8 +29,8 @@ template <typename Word>
 KeccakState<Word>::KeccakState(permutation_fun permutation, size_t capacity_bytes, const std::vector<Word> &initial)
     : permutation(permutation), capacity_bytes(capacity_bytes)
 {
-    assert(capacity_bytes < data.size() * sizeof(Word));
-    rate_bytes = data.size() * sizeof(Word) - capacity_bytes;
+    assert(capacity_bytes < state_bytes);
+    rate_bytes = state_bytes - capacity_bytes;
     assert(initial.size() == data.size());
     std::copy(initial.cbegin(), initial.cend(), data.begin());
 }
@@ -39,8 +39,8 @@ template <typename Word>
 KeccakState<Word>::KeccakState(permutation_fun permutation, size_t capacity_bytes, const std::array<Word, 25> &initial)
     : permutation(permutation), capacity_bytes(capacity_bytes)
 {
-    assert(capacity_bytes < data.size() * sizeof(Word));
-    rate_bytes = data.size() * sizeof(Word) - capacity_bytes;
+    assert(capacity_bytes < state_bytes);
+    rate_bytes = state_bytes - capacity_bytes;
     std::copy(initial.cbegin(), initial.cend(), data.begin());
 }
 
