@@ -120,7 +120,7 @@ const std::array<std::array<size_t, 5>, 5> Keccak::rotation_offsets{{
 }};
 
 
-void Keccak::theta(State &state)
+void Keccak::theta(KeccakState<uint64_t> &state)
 {
     std::array<uint64_t, 5> C;
     uint64_t D;
@@ -140,7 +140,7 @@ void Keccak::theta(State &state)
     }
 }
 
-void Keccak::rho_pi(State &state)
+void Keccak::rho_pi(KeccakState<uint64_t> &state)
 {
     size_t x = 1;
     size_t y = 0;
@@ -170,9 +170,9 @@ void Keccak::rho_pi(State &state)
 }
 
 
-void Keccak::chi(State &state)
+void Keccak::chi(KeccakState<uint64_t> &state)
 {
-    State tmp{state};
+    KeccakState<uint64_t> tmp{state};
     for (size_t x{0}; x < 5; ++x)
     {
         for (size_t y{0}; y < 5; ++y)
@@ -182,12 +182,12 @@ void Keccak::chi(State &state)
     }
 }
 
-void Keccak::iota(State &state, size_t round)
+void Keccak::iota(KeccakState<uint64_t> &state, size_t round)
 {
     state(0, 0) ^= Keccak::round_constants[round];
 }
 
-void Keccak::round(State &state, uint64_t round)
+void Keccak::round(KeccakState<uint64_t> &state, uint64_t round)
 {
     theta(state);
     rho_pi(state);
@@ -196,7 +196,7 @@ void Keccak::round(State &state, uint64_t round)
 }
 
 
-void Keccak::permutation(State &state)
+void Keccak::permutation(KeccakState<uint64_t> &state)
 {
     for (size_t i{0}; i < 24; ++i)
     {

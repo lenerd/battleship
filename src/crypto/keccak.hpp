@@ -5,6 +5,8 @@
 #include <functional>
 #include <vector>
 
+#include "keccak_state.hpp"
+
 using bytes_t = std::vector<uint8_t>;
 
 
@@ -14,79 +16,6 @@ using bytes_t = std::vector<uint8_t>;
 class Keccak
 {
 public:
-    /**
-     * State of the sponge construction.
-     * The word size is currently fixed at 64 bit.
-     */
-    class State
-    {
-    public:
-        /**
-         * Type of permutation functions.
-         */
-        using permutation_fun = std::function<void(State&)>;
-        /**
-         * Construct State initialized with zeros.
-         */
-        State(permutation_fun permutation, size_t capacity_bytes);
-        /**
-         * Construct State initialized with data.
-         */
-        State(permutation_fun permutation, size_t capacity_bytes, const bytes_t &initial);
-        State(permutation_fun permutation, size_t capacity_bytes, const std::vector<uint64_t> &initial);
-        State(permutation_fun permutation, size_t capacity_bytes, const std::array<uint64_t, 25> &initial);
-
-        /**
-         * Copy constructor.
-         */
-        State(const State &other);
-        /**
-         * Move constructor.
-         */
-        State(State &&other);
-        /**
-         * Copy assignment.
-         */
-        State& operator=(const State &other);
-        /**
-         * Move assignment.
-         */
-        State& operator=(State &&other);
-
-        /**
-         * Absorbs rate_bytes bytes of data into the sponge.
-         */
-        void absorb(const bytes_t &bytes);
-        void absorb(bytes_t::const_iterator first);
-        /**
-         * Squeezes rate_bytes bytes from the sponge.
-         */
-        bytes_t squeeze();
-        void squeeze(bytes_t::iterator out_first);
-
-        /**
-         * Two-dimensional access.
-         */
-        uint64_t& operator()(size_t x, size_t y);
-        const uint64_t& operator()(size_t x, size_t y) const;
-
-        /**
-         * Chosen permutation.
-         */
-        permutation_fun permutation;
-        /**
-         * Number of capacity bytes.
-         */
-        size_t capacity_bytes;
-        /**
-         * Number of rate bytes.
-         */
-        size_t rate_bytes;
-        /**
-         * Actual state consisting of 25 words.
-         */
-        std::array<uint64_t, 25> data;
-    };
 
     /**
      * General constructor.
@@ -118,28 +47,28 @@ public:
     /**
      * Keccak-f permutation.
      */
-    static void permutation(State &state);
+    static void permutation(KeccakState<uint64_t> &state);
     /**
      * Single round of the Keccak-f permutation.
      */
-    static void round(State &state, uint64_t round);
+    static void round(KeccakState<uint64_t> &state, uint64_t round);
 
     /**
      * theta part of the Keccac-f permutation.
      */
-    static void theta(State &state);
+    static void theta(KeccakState<uint64_t> &state);
     /**
      * rho and pi part of the Keccac-f permutation.
      */
-    static void rho_pi(State &state);
+    static void rho_pi(KeccakState<uint64_t> &state);
     /**
      * chi part of the Keccac-f permutation.
      */
-    static void chi(State &state);
+    static void chi(KeccakState<uint64_t> &state);
     /**
      * iota part of the Keccac-f permutation.
      */
-    static void iota(State &state, size_t round);
+    static void iota(KeccakState<uint64_t> &state, size_t round);
 
     /**
      * Size of the output in bytes.
@@ -174,7 +103,7 @@ public:
 
 private:
     bytes_t input_buffer;
-    State state_;
+    KeccakState<uint64_t> state_;
 };
 
 
