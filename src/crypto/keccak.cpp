@@ -11,13 +11,13 @@ template <typename Word>
 Keccak<Word>::Keccak(size_t capacity_bits, uint8_t d, size_t output_bits)
         : output_bytes(output_bits / 8),
           capacity_bytes(capacity_bits / 8),
-          rate_bytes((1600 - capacity_bits) / 8),
+          rate_bytes(state_bytes - capacity_bytes),
           d(d),
           state_(permutation, capacity_bytes)
 {
     assert(capacity_bits % 8 == 0);
     assert(output_bits % 8 == 0);
-    assert(capacity_bytes + rate_bytes == 200);
+    assert(capacity_bytes + rate_bytes == state_.state_bytes);
     input_buffer.reserve(rate_bytes);
 }
 
@@ -218,7 +218,7 @@ inline Keccak<uint64_t> SHA3_512()
 inline Keccak<uint16_t> Keccak400()
 {
     // TODO: fix parameter
-    return Keccak<uint16_t>(1024, 0x06, 512);
+    return Keccak<uint16_t>(256, 0x06, 256);
 }
 
 #endif // KECCAK_CPP

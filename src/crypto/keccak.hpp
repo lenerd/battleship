@@ -64,6 +64,11 @@ public:
      */
     static void iota(KeccakState<Word> &state, size_t round);
 
+
+    /**
+     * Size of the state in bytes.
+     */
+    const static size_t state_bytes = 25 * sizeof(Word);
     /**
      * Size of the output in bytes.
      */
@@ -139,6 +144,10 @@ Keccak<uint64_t> SHA3_256();
  * Constructor for SHA3-512.
  */
 Keccak<uint64_t> SHA3_512();
+/**
+ * Constructor for SHA3-512.
+ */
+Keccak<uint16_t> Keccak400();
 
 #include "keccak.cpp"
 
