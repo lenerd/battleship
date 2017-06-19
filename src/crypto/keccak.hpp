@@ -89,15 +89,31 @@ public:
     /**
      * Keccak round constants.
      */
-    const static std::array<uint64_t, 24> constexpr round_constants{{
-        0x0000000000000001, 0x0000000000008082, 0x800000000000808A,
-        0x8000000080008000, 0x000000000000808B, 0x0000000080000001,
-        0x8000000080008081, 0x8000000000008009, 0x000000000000008A,
-        0x0000000000000088, 0x0000000080008009, 0x000000008000000A,
-        0x000000008000808B, 0x800000000000008B, 0x8000000000008089,
-        0x8000000000008003, 0x8000000000008002, 0x8000000000000080,
-        0x000000000000800A, 0x800000008000000A, 0x8000000080008081,
-        0x8000000000008080, 0x0000000080000001, 0x8000000080008008
+    const static std::array<Word, 24> constexpr round_constants{{
+        static_cast<Word>(0x0000000000000001),
+        static_cast<Word>(0x0000000000008082),
+        static_cast<Word>(0x800000000000808A),
+        static_cast<Word>(0x8000000080008000),
+        static_cast<Word>(0x000000000000808B),
+        static_cast<Word>(0x0000000080000001),
+        static_cast<Word>(0x8000000080008081),
+        static_cast<Word>(0x8000000000008009),
+        static_cast<Word>(0x000000000000008A),
+        static_cast<Word>(0x0000000000000088),
+        static_cast<Word>(0x0000000080008009),
+        static_cast<Word>(0x000000008000000A),
+        static_cast<Word>(0x000000008000808B),
+        static_cast<Word>(0x800000000000008B),
+        static_cast<Word>(0x8000000000008089),
+        static_cast<Word>(0x8000000000008003),
+        static_cast<Word>(0x8000000000008002),
+        static_cast<Word>(0x8000000000000080),
+        static_cast<Word>(0x000000000000800A),
+        static_cast<Word>(0x800000008000000A),
+        static_cast<Word>(0x8000000080008081),
+        static_cast<Word>(0x8000000000008080),
+        static_cast<Word>(0x0000000080000001),
+        static_cast<Word>(0x8000000080008008)
     }};
     /**
      * Keccak rotation offsets.

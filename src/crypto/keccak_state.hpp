@@ -26,6 +26,7 @@ public:
     /**
      * Construct State initialized with data.
      */
+    // TODO: disable bytes_t constructor for Word = uint8_t
     KeccakState(permutation_fun permutation, size_t capacity_bytes, const bytes_t &initial);
     KeccakState(permutation_fun permutation, size_t capacity_bytes, const std::vector<Word> &initial);
     KeccakState(permutation_fun permutation, size_t capacity_bytes, const std::array<Word, 25> &initial);

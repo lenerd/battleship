@@ -89,14 +89,14 @@ bytes_t Keccak<Word>::finalize()
 }
 
 template <typename Word>
-const std::array<uint64_t, 24> Keccak<Word>::round_constants;
+const std::array<Word, 24> Keccak<Word>::round_constants;
 template <typename Word>
 const std::array<std::array<size_t, 5>, 5> Keccak<Word>::rotation_offsets;
 
 template <typename Word>
 Word rotate(Word n, size_t k)
 {
-    return (n << k) | (n >> (sizeof(Word)*8 - k));
+    return static_cast<Word>((n << k) | (n >> (sizeof(Word)*8 - k)));
 }
 
 
@@ -213,6 +213,12 @@ inline Keccak<uint64_t> SHA3_256()
 inline Keccak<uint64_t> SHA3_512()
 {
     return Keccak<uint64_t>(1024, 0x06, 512);
+}
+
+inline Keccak<uint16_t> Keccak400()
+{
+    // TODO: fix parameter
+    return Keccak<uint16_t>(1024, 0x06, 512);
 }
 
 #endif // KECCAK_CPP

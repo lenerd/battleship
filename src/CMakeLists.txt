@@ -74,8 +74,6 @@ set(BATTLESHIP_SOURCES
     circuits/trivial_decider.cpp
     crypto/committer.cpp
     crypto/hash_committer.cpp
-    crypto/keccak.cpp
-    crypto/keccak_state.cpp
     crypto/naor_committer.cpp
     game/board.cpp
     game/game_communicator.cpp
