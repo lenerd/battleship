@@ -8,14 +8,22 @@
 
 using bytes_t = std::vector<uint8_t>;
 
-using perm_vector = std::tuple<std::array<uint64_t, 25>, std::array<uint64_t, 25>, size_t>;
+template <typename Word>
+using perm_vector = std::tuple<std::array<Word, 25>, std::array<Word, 25>, size_t>;
 using test_vector = std::pair<bytes_t, bytes_t>;
 
-std::vector<perm_vector> theta_vectors();
-std::vector<perm_vector> rho_pi_vectors();
-std::vector<perm_vector> chi_vectors();
-std::vector<perm_vector> iota_vectors();
-std::vector<perm_vector> permutation_vectors();
+std::vector<perm_vector<uint64_t>> theta_vectors_64();
+std::vector<perm_vector<uint64_t>> rho_pi_vectors_64();
+std::vector<perm_vector<uint64_t>> chi_vectors_64();
+std::vector<perm_vector<uint64_t>> iota_vectors_64();
+std::vector<perm_vector<uint64_t>> permutation_vectors_64();
+std::vector<perm_vector<uint16_t>> theta_vectors_16();
+std::vector<perm_vector<uint16_t>> rho_pi_vectors_16();
+std::vector<perm_vector<uint16_t>> rho_vectors_16();
+std::vector<perm_vector<uint16_t>> pi_vectors_16();
+std::vector<perm_vector<uint16_t>> chi_vectors_16();
+std::vector<perm_vector<uint16_t>> iota_vectors_16();
+std::vector<perm_vector<uint16_t>> permutation_vectors_16();
 
 std::vector<test_vector> sha3_256_vectors();
 std::vector<test_vector> sha3_512_vectors();

@@ -6,7 +6,7 @@
 
 TEST(KeccakCircuitTest, Theta)
 {
-    auto test_vectors{theta_vectors()};
+    auto test_vectors{theta_vectors_64()};
     for (auto &tuple : test_vectors)
     {
         auto input{std::get<0>(tuple)};
@@ -18,7 +18,7 @@ TEST(KeccakCircuitTest, Theta)
 
 TEST(KeccakCircuitTest, RhoPi)
 {
-    auto test_vectors{rho_pi_vectors()};
+    auto test_vectors{rho_pi_vectors_64()};
     for (auto &tuple : test_vectors)
     {
         auto input{std::get<0>(tuple)};
@@ -30,7 +30,7 @@ TEST(KeccakCircuitTest, RhoPi)
 
 TEST(KeccakCircuitTest, Chi)
 {
-    auto test_vectors{chi_vectors()};
+    auto test_vectors{chi_vectors_64()};
     for (auto &tuple : test_vectors)
     {
         auto input{std::get<0>(tuple)};
@@ -42,7 +42,7 @@ TEST(KeccakCircuitTest, Chi)
 
 TEST(KeccakCircuitTest, Iota)
 {
-    auto test_vectors{iota_vectors()};
+    auto test_vectors{iota_vectors_64()};
     for (auto &tuple : test_vectors)
     {
         auto input{std::get<0>(tuple)};
@@ -54,7 +54,7 @@ TEST(KeccakCircuitTest, Iota)
 
 TEST(KeccakCircuitTest, Permutation)
 {
-    auto test_vectors{permutation_vectors()};
+    auto test_vectors{permutation_vectors_64()};
     for (auto &tuple : test_vectors)
     {
         auto input{std::get<0>(tuple)};
