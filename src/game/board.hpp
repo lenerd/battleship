@@ -7,27 +7,75 @@
 #include <boost/signals2.hpp>
 #include "misc/util.hpp"
 
-
+/**
+ * Representation of a Battleship board
+ */
 class Board
 {
 public:
+    /**
+     * Query a position (it is marked as queried)
+     */
     bool query(coords_t coords);
+    /**
+     * Set a position and mark it as queried
+     */
     void set_queried(coords_t, bool value);
+    /**
+     * Mark a position as queried
+     */
     void mark_queried(coords_t coords);
+    /**
+     * Return whether a position was queried
+     */
     bool is_queried(coords_t coords);
 
+    /**
+     * Get the value at a position
+     */
     bool get(coords_t coords);
+    /**
+     * Set the value at a position
+     */
     void set(coords_t coords, bool value = true);
+    /**
+     * Reset the value at a position
+     */
     void reset(coords_t coords);
+    /**
+     * Invert the value at a position
+     */
     void flip(coords_t coords);
+
+    /**
+     * Commit to the board
+     */
     void commit();
+    /**
+     * Draw the board to stderr
+     */
     void debug();
+    /**
+     * Draw the board to a stream
+     */
     void draw(std::ostream& os);
 
+    /**
+     * Check whether there are ships alive
+     */
     bool ships_alive();
+    /**
+     * Count the number of ship parts that are hit
+     */
     size_t num_ships_hit();
 
+    /**
+     * Size of the board
+     */
     static const size_t size = 10;
+    /**
+     * Signal that is triggered when a position is updated
+     */
     boost::signals2::signal<void(coords_t)> signal_updated_position;
 
 private:

@@ -9,9 +9,15 @@
 
 enum class Role;
 
+/**
+ * Implements stateemachine of the game
+ */
 class Game
 {
 public:
+    /**
+     * Possible states
+     */
     enum class State
     {
         initial,
@@ -28,23 +34,59 @@ public:
         abort,
         end,
     };
+    /**
+     * Constructor
+     */
     Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn);
+    /**
+     * Destructor
+     */
     ~Game();
+
+    /**
+     * Run the game
+     */
     void run();
 
     // game preparation
+    /**
+     * Handle phase: initial
+     */
     void handle_initial();
+    /**
+     * Handle phase: ships are placed
+     */
     void handle_ships_placed();
+    /**
+     * Handle phase: ships are committed
+     */
     void handle_ships_committed();
+    /**
+     * Handle phase: commitments are sent
+     */
     void handle_commitments_sent();
+    /**
+     * Handle phase: ready to play
+     */
     void handle_commitments_received();
+    /**
+     * Handle phase: ready to play
+     */
     void handle_ready();
 
     // game
+    /**
+     * Handle query phase
+     */
     void handle_query_phase();
+    /**
+     * Handle answer phase
+     */
     void handle_answer_phase();
 
-    // end of game
+    /**
+     * end of game
+     */
     void handle_end();
 private:
     Role role_;
