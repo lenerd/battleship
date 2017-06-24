@@ -9,6 +9,9 @@
 
 class Board;
 
+/**
+ * User interface implementation via web browser
+ */
 class WebInterface : public UserInterface
 {
 public:
@@ -21,12 +24,28 @@ public:
     void post_message(std::string message);
     void wait_for_quit();
 
+    /**
+     * Send message to update a boards representation
+     */
     void update_position(std::string board, size_t row, size_t col);
+    /**
+     * Send message to switch states in the client state machine
+     */
     void switch_state(std::string state);
 
+    /**
+     * Start/stop the webserver
+     */
     void start_webserver();
     void kill_webserver();
+    /**
+     * Start a webbrowser
+     */
     void start_webbrowser();
+
+    /**
+     * Used ports
+     */
     uint16_t http_port;
     uint16_t ws_port;
 private:

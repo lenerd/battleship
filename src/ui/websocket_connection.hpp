@@ -4,14 +4,32 @@
 #include <memory>
 #include <string>
 
+/**
+ * Wrapper around a web socket
+ */
 class WebSocketConnection
 {
 public:
+    /**
+     * Constructor: Listen on a Port
+     */
     WebSocketConnection(uint16_t port);
+    /**
+     * Destructor
+     */
     ~WebSocketConnection();
 
+    /**
+     * Receive a message
+     */
     std::string recv_message();
+    /**
+     * Send a message
+     */
     void send_message(std::string data);
+    /**
+     * Accept an incoming connection
+     */
     void accept();
 private:
     uint16_t port_;

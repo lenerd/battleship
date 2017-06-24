@@ -5,11 +5,23 @@
 #include <limits>
 #include <ncurses.h>
 
+/**
+ * Wrapper of an ncurses window object
+ */
 class NCursesWindow
 {
 public:
+    /**
+     * Constructor with position, and dimensions
+     */
     NCursesWindow(int starty, int startx, int height, int width);
+    /**
+     * Destructor
+     */
     ~NCursesWindow();
+    /**
+     * Return the raw window handle
+     */
     WINDOW* get_window();
 
 protected:

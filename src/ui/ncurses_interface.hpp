@@ -7,6 +7,9 @@
 #include "user_interface.hpp"
 
 
+/**
+ * User interface implementation with ncurses
+ */
 class NCursesInterface : public UserInterface
 {
 public:

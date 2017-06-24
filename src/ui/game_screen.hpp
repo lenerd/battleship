@@ -8,6 +8,9 @@
 class BoardWindow;
 class MessageWindow;
 
+/**
+ * Screen of the ncurses interface during the game
+ */
 class GameScreen
 {
 public:
