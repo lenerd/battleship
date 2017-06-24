@@ -6,11 +6,17 @@
 #include <mutex>
 #include <queue>
 
+/**
+ * Locked queue for elements of type T
+ */
 template <typename T>
 class Queue
 {
 public:
 
+    /**
+     * Adds a new element to the queue.
+     */
     void enqueue(const T& item)
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -18,6 +24,9 @@ public:
         cv_.notify_one();
     }
 
+    /**
+     * Receives an element from the queue.
+     */
     T dequeue()
     {
         std::unique_lock<std::mutex> lock(mutex_);

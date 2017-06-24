@@ -6,18 +6,27 @@
 #include <ostream>
 
 
+/**
+ * A role in the client-server setting
+ */
 enum class Role
 {
     client,
     server,
 };
 
+/**
+ * The supported user interfaces
+ */
 enum class UIType
 {
     ncurses,
     web,
 };
 
+/**
+ * Configurable options of the application.
+ */
 struct Options
 {
     Role role;
@@ -31,6 +40,9 @@ struct Options
 };
 
 
+/**
+ * iostream support for the Role and UIType enums
+ */
 std::istream& operator>>(std::istream &is, Role &role);
 std::ostream& operator<<(std::ostream &os, const Role &role);
 std::istream& operator>>(std::istream &is, UIType &type);
