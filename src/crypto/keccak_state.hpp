@@ -163,6 +163,4 @@ public:
 };
 
 
-#include "keccak_state.cpp"
-
 #endif // KECCAK_STATE_HPP
