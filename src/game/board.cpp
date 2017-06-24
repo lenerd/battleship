@@ -1,5 +1,11 @@
 #include <iostream>
 #include "board.hpp"
+#include "except.hpp"
+
+Board::Board(Committer_p committer)
+    : committer_(committer)
+{
+}
 
 bool Board::query(coords_t coords)
 {
@@ -51,9 +57,30 @@ void Board::flip(coords_t coords)
     signal_updated_position(coords);
 }
 
-void Board::commit()
+void Board::send_commitments()
 {
-    throw std::logic_error("Board::commit not implemented");
+    if (committer_ == nullptr)
+        return;
+
+    commitments_.resize(100);
+    for (size_t i{0}; i < 100; ++i)
+    {
+        commitments_[i] = committer_->send_commitment(ships_.test(i));
+    }
+    committed_ = true;
+}
+
+void Board::recv_commitments()
+{
+    if (committer_ == nullptr)
+        return;
+
+    commitments_.resize(100);
+    for (size_t i{0}; i < 100; ++i)
+    {
+        commitments_[i] = committer_->recv_commitment();
+    }
+    committed_ = true;
 }
 
 void Board::debug()

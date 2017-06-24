@@ -69,4 +69,7 @@ protected:
     Conn_p conn_;
 };
 
+
+using Committer_p = std::shared_ptr<Committer>;
+
 #endif // COMMITTER_HPP

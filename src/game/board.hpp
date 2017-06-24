@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <boost/signals2.hpp>
+#include "crypto/committer.hpp"
 #include "misc/util.hpp"
 
 /**
@@ -13,6 +14,10 @@
 class Board
 {
 public:
+    /**
+     * Constructor with committer
+     */
+    Board(Committer_p committer=nullptr);
     /**
      * Query a position (it is marked as queried)
      */
@@ -50,7 +55,8 @@ public:
     /**
      * Commit to the board
      */
-    void commit();
+    void send_commitments();
+    void recv_commitments();
     /**
      * Draw the board to stderr
      */
@@ -83,7 +89,9 @@ private:
     coords_t index_to_coords(size_t n);
     std::bitset<size*size> ships_;
     std::bitset<size*size> queried_;
-    // bool committed_;
+    bool committed_;
+    Committer_p committer_;
+    std::vector<Comm_p> commitments_;
 };
 
 using Board_p = std::shared_ptr<Board>;
