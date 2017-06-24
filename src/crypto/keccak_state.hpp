@@ -10,7 +10,7 @@ using bytes_t = std::vector<uint8_t>;
 
 /**
  * State of the sponge construction.
- * The word size is currently fixed at 64 bit.
+ * The word type is given as template argument.
  */
 template <typename Word>
 class KeccakState

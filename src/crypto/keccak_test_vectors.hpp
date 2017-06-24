@@ -6,6 +6,10 @@
 #include <tuple>
 #include <vector>
 
+/**
+ * This module contains test vectors for the keccak family of hash functions.
+ */
+
 using bytes_t = std::vector<uint8_t>;
 
 template <typename Word>

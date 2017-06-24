@@ -12,6 +12,9 @@ enum class CommitmentAlgorithm
     NAOR,
 };
 
+/**
+ * Represents a commitment
+ */
 struct Commitment
 {
     virtual ~Commitment() = default;
@@ -23,16 +26,38 @@ struct Commitment
 
 using Comm_p = std::shared_ptr<Commitment>;
 
+
+/**
+ * Abstraction of a commitment scheme
+ */
 class Committer
 {
 public:
+    /**
+     * Constructor, gets access to a connection object.
+     */
     Committer(Conn_p conn) : conn_(conn) {}
+    /**
+     * Destructor
+     */
     virtual ~Committer() = default;
 
+    /**
+     * Make a commitment (sender)
+     */
     virtual Comm_p send_commitment(bool) = 0;
+    /**
+     * Send a decommitment (sender)
+     */
     virtual void send_decommitment(const Comm_p&) = 0;
 
+    /**
+     * Receive a commitment (receiver)
+     */
     virtual Comm_p recv_commitment() = 0;
+    /**
+     * Receive a decommitment (receiver)
+     */
     virtual bool recv_decommitment(Comm_p&) = 0;
 
 
