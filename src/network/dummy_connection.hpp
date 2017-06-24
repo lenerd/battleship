@@ -4,11 +4,17 @@
 #include "connection.hpp"
 #include "misc/queue.hpp"
 
+/**
+ * Dummy connection for testing purposes
+ */
 class DummyConnection : public Connection
 {
 public:
     using message_queue_t = std::shared_ptr<Queue<bytes_t>>;
 
+    /**
+     * Create a pair of connection objects that are connection to each other
+     */
     static std::pair<Conn_p, Conn_p> make_dummies();
 
     DummyConnection(message_queue_t send_queue, message_queue_t recv_queue);
