@@ -105,6 +105,10 @@ void Board::prove_answer(coords_t coords)
     committer_->send_decommitment(commitments_[i]);
 }
 
+std::vector<Comm_p> Board::get_commitments()
+{
+    return commitments_;
+}
 
 void Board::debug()
 {

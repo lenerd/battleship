@@ -36,7 +36,7 @@ public:
     /**
      * Constructor
      */
-    Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn);
+    Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn, bool prove_board=true);
     /**
      * Destructor
      */
@@ -96,6 +96,7 @@ private:
     UI_p ui_;
     GameCommunicator game_comm_;
     bool won_;
+    bool prove_board_;
 };
 
 #endif // GAME_H

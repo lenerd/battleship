@@ -65,6 +65,11 @@ public:
     void prove_answer(coords_t coords);
 
     /**
+     * Return vector of commitments
+     */
+    std::vector<Comm_p> get_commitments();
+
+    /**
      * Draw the board to stderr
      */
     void debug();

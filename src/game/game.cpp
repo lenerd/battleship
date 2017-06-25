@@ -5,17 +5,19 @@
 #include "game.hpp"
 #include "except.hpp"
 #include "crypto/hash_committer.hpp"
+#include "circuits/proof.hpp"
 #include "ui/user_interface.hpp"
 #include "misc/util.hpp"
 
 
-Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn)
+Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn, bool prove_board)
     : role_(role), state_(State::initial),
       committer_(std::make_shared<SHA3_256_HashCommitter>(conn)),
       board_local_(std::make_shared<Board>(committer_)),
       board_remote_(std::make_shared<Board>(committer_)),
       ui_(ui_factory.make(ui_type, board_local_, board_remote_)),
-      game_comm_(conn)
+      game_comm_(conn),
+      prove_board_(prove_board)
 {
     ui_->show();
 }
@@ -97,6 +99,76 @@ void Game::handle_ships_committed()
 {
     assert(state_ == State::ships_committed);
     std::cerr << "state: ships_committed\n";
+
+    if (prove_board_)
+    {
+        bool result;
+        if (role_ == Role::server)
+        {
+            // prove
+            ui_->post_message("Proving validity of the board ...");
+            std::cerr << "Proving validity of the board ...\n";
+            result = proof_sender(board_local_->get_commitments(), role_);
+            if (result)
+            {
+                ui_->post_message("... Success");
+                std::cerr << "Success\n";
+            }
+            else
+            {
+                ui_->post_message("... Failure, this looks like cheating");
+                std::cerr << "Failure\n";
+            }
+
+            // verify
+            ui_->post_message("Verifying validity of the opponent's board");
+            std::cerr << "Verifying validity of the opponent's board ...\n";
+            result = proof_receiver(board_remote_->get_commitments(), role_);
+            if (result)
+            {
+                ui_->post_message("... Success");
+                std::cerr << "Success\n";
+            }
+            else
+            {
+                ui_->post_message("... Failure, Cheating Detected!");
+                std::cerr << "Failure\n";
+            }
+        }
+        else
+        {
+            // verify
+            ui_->post_message("Verifying validity of the opponent's board");
+            std::cerr << "Verifying validity of the opponent's board ...\n";
+            result = proof_receiver(board_remote_->get_commitments(), role_);
+            if (result)
+            {
+                ui_->post_message("... Success");
+                std::cerr << "Success\n";
+            }
+            else
+            {
+                ui_->post_message("... Failure, Cheating Detected!");
+                std::cerr << "Failure\n";
+            }
+
+            // prove
+            ui_->post_message("Proving validity of the board ...");
+            std::cerr << "Proving validity of the board ...\n";
+            result = proof_sender(board_local_->get_commitments(), role_);
+            if (result)
+            {
+                ui_->post_message("... Success");
+                std::cerr << "Success\n";
+            }
+            else
+            {
+                ui_->post_message("... Failure, this looks like cheating");
+                std::cerr << "Failure\n";
+            }
+        }
+    }
+
     state_ = State::ready;
 }
 
