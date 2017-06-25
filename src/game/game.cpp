@@ -3,14 +3,16 @@
 #include <iostream>
 #include <stdexcept>
 #include "game.hpp"
+#include "crypto/hash_committer.hpp"
 #include "ui/user_interface.hpp"
 #include "misc/util.hpp"
 
 
 Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn)
     : role_(role), state_(State::initial),
-      board_local_(std::make_shared<Board>()),
-      board_remote_(std::make_shared<Board>()),
+      committer_(std::make_shared<SHA3_256_HashCommitter>(conn)),
+      board_local_(std::make_shared<Board>(committer_)),
+      board_remote_(std::make_shared<Board>(committer_)),
       ui_(ui_factory.make(ui_type, board_local_, board_remote_)),
       game_comm_(conn)
 {
@@ -36,12 +38,6 @@ void Game::run()
             case State::ships_committed:
                 handle_ships_committed();
                 break;
-            case State::commitments_sent:
-                handle_commitments_sent();
-                break;
-            case State::commitments_received:
-                handle_commitments_received();
-                break;
             case State::ready:
                 handle_ready();
                 break;
@@ -64,6 +60,7 @@ void Game::handle_initial()
     std::cerr << "state: initial\n";
     // place ships
     board_local_->debug();
+    ui_->post_message("Place your ships!");
     ui_->place_ships();
     board_local_->debug();
     state_ = State::ships_placed;
@@ -73,41 +70,28 @@ void Game::handle_ships_placed()
 {
     assert(state_ == State::ships_placed);
     std::cerr << "state: ships_placed\n";
-    // TODO: make and exchange commitments
-    // state_ = State::ships_committed;
-    state_ = State::ready;
+
+    if (role_ == Role::server)
+    {
+        ui_->post_message("Committing board");
+        board_local_->send_commitments();
+        ui_->post_message("Receiving commitments");
+        board_remote_->recv_commitments();
+    }
+    else
+    {
+        ui_->post_message("Receiving commitments");
+        board_remote_->recv_commitments();
+        ui_->post_message("Committing board");
+        board_local_->send_commitments();
+    }
+    state_ = State::ships_committed;
 }
 
 void Game::handle_ships_committed()
 {
     assert(state_ == State::ships_committed);
     std::cerr << "state: ships_committed\n";
-    if (role_ == Role::server)
-    {
-        // send commitments
-        state_ = State::commitments_sent;
-    }
-    else
-    {
-        // recv commitments
-        state_ = State::commitments_received;
-    }
-}
-
-void Game::handle_commitments_sent()
-{
-    assert(state_ == State::commitments_sent);
-    assert(role_ == Role::server);
-    // recv commitments
-    state_ = State::ready;
-}
-
-
-void Game::handle_commitments_received()
-{
-    assert(state_ == State::commitments_received);
-    assert(role_ == Role::client);
-    // send commitments
     state_ = State::ready;
 }
 
@@ -115,6 +99,7 @@ void Game::handle_ready()
 {
     assert(state_ == State::ready);
     std::cerr << "state: ready\n";
+    ui_->post_message("Game starts");
     if (role_ == Role::server)
         state_ = State::query_phase;
     else

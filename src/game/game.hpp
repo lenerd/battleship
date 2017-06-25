@@ -4,6 +4,7 @@
 #include <memory>
 #include "board.hpp"
 #include "game_communicator.hpp"
+#include "crypto/committer.hpp"
 #include "misc/options.hpp"
 #include "ui/user_interface.hpp"
 
@@ -23,8 +24,6 @@ public:
         initial,
         ships_placed,
         ships_committed,
-        commitments_sent,
-        commitments_received,
         ready,
         turn,
         query_phase,
@@ -91,6 +90,7 @@ public:
 private:
     Role role_;
     State state_;
+    Committer_p committer_;
     Board_p board_local_;
     Board_p board_remote_;
     UI_p ui_;
