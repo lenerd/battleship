@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "game.hpp"
+#include "except.hpp"
 #include "crypto/hash_committer.hpp"
 #include "ui/user_interface.hpp"
 #include "misc/util.hpp"
@@ -75,15 +76,19 @@ void Game::handle_ships_placed()
     {
         ui_->post_message("Committing board");
         board_local_->send_commitments();
+        std::cerr << "commitments sent\n";
         ui_->post_message("Receiving commitments");
         board_remote_->recv_commitments();
+        std::cerr << "commitments received\n";
     }
     else
     {
         ui_->post_message("Receiving commitments");
         board_remote_->recv_commitments();
+        std::cerr << "commitments received\n";
         ui_->post_message("Committing board");
         board_local_->send_commitments();
+        std::cerr << "commitments sent\n";
     }
     state_ = State::ships_committed;
 }
@@ -115,6 +120,19 @@ void Game::handle_query_phase()
     auto coords{ui_->select_position()};
     auto answer{game_comm_.query_position(coords)};
     board_remote_->set_queried(coords, answer);
+    // verify commitment
+    try
+    {
+        board_remote_->verify_answer(coords, answer);
+        ui_->post_message("Answer verified with commitment");
+    }
+    catch (CheatingException &e)
+    {
+        ui_->post_message("Opponent was caught cheating:");
+        ui_->post_message(e.what());
+        std::cerr << "Opponent was caught cheating: " << e.what() << "\n";
+    }
+
     if (board_remote_->num_ships_hit() < 3)
     {
         state_ = State::answer_phase;
@@ -132,10 +150,13 @@ void Game::handle_answer_phase()
     std::cerr << "state: answer_phase\n";
 
     ui_->post_message("answering position");
-    game_comm_.answer_query([this] (coords_t coords)
+    auto coords{game_comm_.answer_query([this] (coords_t coords)
         {
             return this->board_local_->query(coords);
-        });
+        })};
+    // decommit
+    board_local_->prove_answer(coords);
+    ui_->post_message("Answer proved with commitment");
     if (board_local_->ships_alive())
     {
         state_ = State::query_phase;

@@ -40,7 +40,7 @@ public:
     /**
      * Answer a query with a callback function
      */
-    virtual void answer_query(std::function<bool(coords_t)> fun);
+    virtual coords_t answer_query(std::function<bool(coords_t)> fun);
     /**
      * Query a position and get the answer
      */

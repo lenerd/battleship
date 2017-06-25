@@ -57,6 +57,13 @@ public:
      */
     void send_commitments();
     void recv_commitments();
+
+    /**
+     * Decommit/verify position
+     */
+    void verify_answer(coords_t coords, bool answer);
+    void prove_answer(coords_t coords);
+
     /**
      * Draw the board to stderr
      */

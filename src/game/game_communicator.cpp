@@ -53,10 +53,11 @@ bool GameCommunicator::recv_answer()
     return answer->value();
 }
 
-void GameCommunicator::answer_query(std::function<bool(coords_t)> fun)
+coords_t GameCommunicator::answer_query(std::function<bool(coords_t)> fun)
 {
     auto coords{recv_query()};
     send_answer(fun(coords));
+    return coords;
 }
 
 bool GameCommunicator::query_position(coords_t coords)

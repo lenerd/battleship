@@ -83,6 +83,29 @@ void Board::recv_commitments()
     committed_ = true;
 }
 
+void Board::verify_answer(coords_t coords, bool answer)
+{
+    if (committer_ == nullptr)
+        return;
+
+    auto i{coords_to_index(coords)};
+    auto decommitment_valid{committer_->recv_decommitment(commitments_[i])};
+    if (!decommitment_valid)
+        throw CheatingException("Decommitment was invalid");
+    if (answer != commitments_[i]->value)
+        throw CheatingException("Answer does not match decommitted bit");
+}
+
+void Board::prove_answer(coords_t coords)
+{
+    if (committer_ == nullptr)
+        return;
+
+    auto i{coords_to_index(coords)};
+    committer_->send_decommitment(commitments_[i]);
+}
+
+
 void Board::debug()
 {
     draw(std::cerr);
