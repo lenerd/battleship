@@ -8,7 +8,7 @@
 #include "misc/options.hpp"
 
 
-bool proof_sender(std::bitset<100> board, std::vector<Comm_p> commitments, Role role)
+bool proof_sender(std::vector<Comm_p> commitments, Role role)
 {
     auto aby_role{role == Role::server ? SERVER : CLIENT};
     auto aby{std::make_shared<ABYPartyConnection>(role, "127.0.0.1", 6677)};
