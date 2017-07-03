@@ -10,8 +10,8 @@
 #include "misc/util.hpp"
 
 
-Game::Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn, bool prove_board)
-    : role_(role), state_(State::initial),
+Game::Game(const Options& options, const UIFactory &ui_factory, UIType ui_type, Conn_p conn, bool prove_board)
+    : options_(options), role_(options.role), state_(State::initial),
       committer_(std::make_shared<SHA3_256_HashCommitter>(conn)),
       board_local_(std::make_shared<Board>(committer_)),
       board_remote_(std::make_shared<Board>(committer_)),
@@ -108,7 +108,7 @@ void Game::handle_ships_committed()
             // prove
             ui_->post_message("Proving validity of the board ...");
             std::cerr << "Proving validity of the board ...\n";
-            result = proof_sender(board_local_->get_commitments(), role_);
+            result = proof_sender(board_local_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");
@@ -123,7 +123,7 @@ void Game::handle_ships_committed()
             // verify
             ui_->post_message("Verifying validity of the opponent's board");
             std::cerr << "Verifying validity of the opponent's board ...\n";
-            result = proof_receiver(board_remote_->get_commitments(), role_);
+            result = proof_receiver(board_remote_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");
@@ -140,7 +140,7 @@ void Game::handle_ships_committed()
             // verify
             ui_->post_message("Verifying validity of the opponent's board");
             std::cerr << "Verifying validity of the opponent's board ...\n";
-            result = proof_receiver(board_remote_->get_commitments(), role_);
+            result = proof_receiver(board_remote_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");
@@ -155,7 +155,7 @@ void Game::handle_ships_committed()
             // prove
             ui_->post_message("Proving validity of the board ...");
             std::cerr << "Proving validity of the board ...\n";
-            result = proof_sender(board_local_->get_commitments(), role_);
+            result = proof_sender(board_local_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");

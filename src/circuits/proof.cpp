@@ -8,10 +8,10 @@
 #include "misc/options.hpp"
 
 
-bool proof_sender(std::vector<Comm_p> commitments, Role role)
+bool proof_sender(std::vector<Comm_p> commitments, const Options& options)
 {
-    auto aby_role{role == Role::server ? SERVER : CLIENT};
-    auto aby{std::make_shared<ABYPartyConnection>(role, "127.0.0.1", 6677)};
+    auto aby_role{options.role == Role::server ? SERVER : CLIENT};
+    auto aby{std::make_shared<ABYPartyConnection>(options.role, options.address, options.aby_port)};
     auto circ{aby->get_circuit()};
     std::vector<share_p> comms_valid;
     comms_valid.reserve(commitments.size());
@@ -48,10 +48,10 @@ bool proof_sender(std::vector<Comm_p> commitments, Role role)
 }
 
 
-bool proof_receiver(std::vector<Comm_p> commitments, Role role)
+bool proof_receiver(std::vector<Comm_p> commitments, const Options& options)
 {
-    auto aby_role{role == Role::server ? SERVER : CLIENT};
-    auto aby{std::make_shared<ABYPartyConnection>(role, "127.0.0.1", 6677)};
+    auto aby_role{options.role == Role::server ? SERVER : CLIENT};
+    auto aby{std::make_shared<ABYPartyConnection>(options.role, options.address, options.aby_port)};
     auto circ{aby->get_circuit()};
     std::vector<share_p> comms_valid;
     comms_valid.reserve(commitments.size());

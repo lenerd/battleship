@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
                                                  options.address,
                                                  options.game_port));
         UIFactory ui_factory{options};
-        Game game(options.role,
+        Game game(options,
                   ui_factory,
                   options.ui_type,
                   connection);

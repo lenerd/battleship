@@ -36,7 +36,7 @@ public:
     /**
      * Constructor
      */
-    Game(Role role, const UIFactory &ui_factory, UIType ui_type, Conn_p conn, bool prove_board=true);
+    Game(const Options& options, const UIFactory &ui_factory, UIType ui_type, Conn_p conn, bool prove_board=true);
     /**
      * Destructor
      */
@@ -88,6 +88,7 @@ public:
      */
     void handle_end();
 private:
+    const Options& options_;
     Role role_;
     State state_;
     Committer_p committer_;
