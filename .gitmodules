@@ -1,0 +1,15 @@
+[submodule "extern/flatbuffers"]
+	path = extern/flatbuffers
+	url = https://github.com/google/flatbuffers.git
+[submodule "extern/MIRACL"]
+	path = extern/MIRACL
+	url = https://github.com/lenerd/MIRACL.git
+[submodule "extern/json"]
+	path = extern/json
+	url = https://github.com/nlohmann/json.git
+[submodule "extern/cryptopp"]
+	path = extern/cryptopp
+	url = https://github.com/weidai11/cryptopp.git
+[submodule "extern/Beast"]
+	path = extern/Beast
+	url = https://github.com/vinniefalco/Beast.git
