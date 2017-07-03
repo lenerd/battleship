@@ -13,3 +13,9 @@
 [submodule "extern/Beast"]
 	path = extern/Beast
 	url = https://github.com/vinniefalco/Beast.git
+[submodule "extern/OTExtension"]
+	path = extern/OTExtension
+	url = https://github.com/encryptogroup/OTExtension.git
+[submodule "extern/ABY"]
+	path = extern/ABY
+	url = https://github.com/encryptogroup/ABY.git

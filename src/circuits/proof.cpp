@@ -29,7 +29,8 @@ bool proof_sender(std::vector<Comm_p> commitments, Role role)
 
         comms_valid.push_back(verify_commitment(circ, value_share, padding_shares, digest_shares));
         bit_values.push_back(value);
-        std::cerr << "Comm " << i << ": " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
+        // std::cerr << "Comm " << i << ": " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
+        std::cerr << "Comm " << i << "\n";
         ++i;
     }
     auto all_comms_valid{circ->PutReduceANDGates(comms_valid)};
@@ -63,7 +64,8 @@ bool proof_receiver(std::vector<Comm_p> commitments, Role role)
         auto value_share{circ->PutDummyINGate(8)};
 
         comms_valid.push_back(verify_commitment(circ, value_share, padding_shares, digest_shares));
-        std::cerr << "Comm " << i << ": " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
+        // std::cerr << "Comm " << i << ": " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
+        std::cerr << "Comm " << i << "\n";
         ++i;
     }
     auto all_comms_valid{circ->PutReduceANDGates(comms_valid)};
@@ -72,7 +74,8 @@ bool proof_receiver(std::vector<Comm_p> commitments, Role role)
     auto result{circ->PutANDGate(all_comms_valid, board_valid)};
     auto output{circ->PutOUTGate(result, ALL)};
 
-    std::cerr << "Complete: " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
+    // std::cerr << "Complete: " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
+    std::cerr << "Complete\n";
 
     std::cerr << "Executing ...\n";
     aby->execute();
