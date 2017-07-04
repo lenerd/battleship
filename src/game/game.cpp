@@ -108,7 +108,7 @@ void Game::handle_ships_committed()
             // prove
             ui_->post_message("Proving validity of the board ...");
             std::cerr << "Proving validity of the board ...\n";
-            result = proof_sender(board_local_->get_commitments(), options_);
+            result = proof_prover(board_local_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");
@@ -123,7 +123,7 @@ void Game::handle_ships_committed()
             // verify
             ui_->post_message("Verifying validity of the opponent's board");
             std::cerr << "Verifying validity of the opponent's board ...\n";
-            result = proof_receiver(board_remote_->get_commitments(), options_);
+            result = proof_verifier(board_remote_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");
@@ -140,7 +140,7 @@ void Game::handle_ships_committed()
             // verify
             ui_->post_message("Verifying validity of the opponent's board");
             std::cerr << "Verifying validity of the opponent's board ...\n";
-            result = proof_receiver(board_remote_->get_commitments(), options_);
+            result = proof_verifier(board_remote_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");
@@ -155,7 +155,7 @@ void Game::handle_ships_committed()
             // prove
             ui_->post_message("Proving validity of the board ...");
             std::cerr << "Proving validity of the board ...\n";
-            result = proof_sender(board_local_->get_commitments(), options_);
+            result = proof_prover(board_local_->get_commitments(), options_);
             if (result)
             {
                 ui_->post_message("... Success");

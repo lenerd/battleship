@@ -81,6 +81,7 @@ set(BATTLESHIP_SOURCES
     game/game.cpp
     misc/options.cpp
     misc/util.cpp
+    misc/time.cpp
     network/dummy_connection.cpp
     network/tcp_connection.cpp
     ui/board_window.cpp

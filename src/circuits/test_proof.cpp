@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
         }
         // auto hash_comm{std::dynamic_pointer_cast<HashCommitment>(commitments[42])};
         // hash_comm->padding[4] ^= 0x42;
-        res = proof_sender(commitments, options);
+        res = proof_prover(commitments, options);
     }
     else
     {
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
         {
             commitments[i] = committer.recv_commitment();
         }
-        res = proof_receiver(commitments, options);
+        res = proof_verifier(commitments, options);
     }
     std::cout << "Result: " << res << std::endl;
 

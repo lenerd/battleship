@@ -6,10 +6,12 @@
 #include "keccak.hpp"
 #include "battleship_decider.hpp"
 #include "misc/options.hpp"
+#include "misc/time.hpp"
 
 
-bool proof_sender(std::vector<Comm_p> commitments, const Options& options)
+bool proof_prover(std::vector<Comm_p> commitments, const Options& options)
 {
+    std::cerr << print_now(true) << " ZKP start (prover)\n";
     auto aby_role{options.role == Role::server ? SERVER : CLIENT};
     auto aby{std::make_shared<ABYPartyConnection>(options.role, options.address, options.aby_port)};
     auto circ{aby->get_circuit()};
@@ -18,6 +20,7 @@ bool proof_sender(std::vector<Comm_p> commitments, const Options& options)
     std::vector<uint8_t> bit_values;
     bit_values.reserve(commitments.size());
     size_t i{1};
+    std::cerr << print_now(true) << " Building circuit\n";
     for (auto &comm : commitments)
     {
         auto hash_comm{std::dynamic_pointer_cast<HashCommitment>(comm)};
@@ -30,7 +33,7 @@ bool proof_sender(std::vector<Comm_p> commitments, const Options& options)
         comms_valid.push_back(verify_commitment(circ, value_share, padding_shares, digest_shares));
         bit_values.push_back(value);
         // std::cerr << "Comm " << i << ": " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
-        std::cerr << "Comm " << i << "\n";
+        // std::cerr << "Comm " << i << "\n";
         ++i;
     }
     auto all_comms_valid{circ->PutReduceANDGates(comms_valid)};
@@ -39,23 +42,25 @@ bool proof_sender(std::vector<Comm_p> commitments, const Options& options)
     auto result{circ->PutANDGate(all_comms_valid, board_valid)};
     auto output{circ->PutOUTGate(result, ALL)};
 
-    std::cerr << "Executing ...\n";
+    std::cerr << print_now(true) << " Executing ...\n";
     aby->execute();
-    std::cerr << "Done\n";
+    std::cerr << print_now(true) << " Done\n";
     auto final_result{output->get_clear_value<uint8_t>()};
     assert(final_result == 0x00 || final_result == 0x01);
     return final_result == 0x01;
 }
 
 
-bool proof_receiver(std::vector<Comm_p> commitments, const Options& options)
+bool proof_verifier(std::vector<Comm_p> commitments, const Options& options)
 {
+    std::cerr << print_now(true) << " ZKP start (verifier)\n";
     auto aby_role{options.role == Role::server ? SERVER : CLIENT};
     auto aby{std::make_shared<ABYPartyConnection>(options.role, options.address, options.aby_port)};
     auto circ{aby->get_circuit()};
     std::vector<share_p> comms_valid;
     comms_valid.reserve(commitments.size());
     size_t i{1};
+    std::cerr << print_now(true) << " Building circuit\n";
     for (auto &comm : commitments)
     {
         auto hash_comm{std::dynamic_pointer_cast<HashCommitment>(comm)};
@@ -65,7 +70,7 @@ bool proof_receiver(std::vector<Comm_p> commitments, const Options& options)
 
         comms_valid.push_back(verify_commitment(circ, value_share, padding_shares, digest_shares));
         // std::cerr << "Comm " << i << ": " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
-        std::cerr << "Comm " << i << "\n";
+        // std::cerr << "Comm " << i << "\n";
         ++i;
     }
     auto all_comms_valid{circ->PutReduceANDGates(comms_valid)};
@@ -75,11 +80,11 @@ bool proof_receiver(std::vector<Comm_p> commitments, const Options& options)
     auto output{circ->PutOUTGate(result, ALL)};
 
     // std::cerr << "Complete: " << circ->circ_->m_cCircuit->GetGateHead() << "\n";
-    std::cerr << "Complete\n";
+    // std::cerr << "Complete\n";
 
-    std::cerr << "Executing ...\n";
+    std::cerr << print_now(true) << " Executing ...\n";
     aby->execute();
-    std::cerr << "Done\n";
+    std::cerr << print_now(true) << " Done\n";
     auto final_result{output->get_clear_value<uint8_t>()};
     assert(final_result == 0x00 || final_result == 0x01);
     return final_result == 0x01;
