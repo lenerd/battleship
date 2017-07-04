@@ -11,8 +11,14 @@
 
 namespace po = boost::program_options;
 
+struct TestOptions : public Options
+{
+    bool inv_aby_role;
+    std::string inv_aby_address;
+};
 
-std::pair<Options,bool> parse_arguments(int argc, char* argv[])
+
+TestOptions parse_arguments(int argc, char* argv[])
 {
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -22,6 +28,7 @@ std::pair<Options,bool> parse_arguments(int argc, char* argv[])
         ("game-port", po::value<uint16_t>()->default_value(6666), "game port")
         ("aby-port", po::value<uint16_t>()->default_value(6677), "aby port")
         ("inv-aby-role", po::value<bool>()->default_value(false), "invert aby role")
+        ("inv-aby-address", po::value<std::string>()->default_value("127.0.0.1"), "invert aby address")
     ;
     po::variables_map vm;
     try
@@ -41,19 +48,19 @@ std::pair<Options,bool> parse_arguments(int argc, char* argv[])
         std::cerr << desc << "\n";
         exit(EXIT_FAILURE);
     }
-    Options options;
+    TestOptions options;
     options.role = vm["role"].as<Role>();
     options.address = vm["address"].as<std::string>();
     options.game_port = vm["game-port"].as<uint16_t>();
     options.aby_port = vm["aby-port"].as<uint16_t>();
-    return std::make_pair(options, vm["inv-aby-role"].as<bool>());
+    options.inv_aby_role = vm["inv-aby-role"].as<bool>();
+    options.inv_aby_address = vm["inv-aby-address"].as<std::string>();
+    return options;
 }
 
 int main(int argc, char* argv[])
 {
-    auto pair{parse_arguments(argc, argv)};
-    auto options{pair.first};
-    auto inv_aby_role{pair.second};
+    auto options{parse_arguments(argc, argv)};
 
     boost::asio::io_service io_service;
     auto conn{TCPConnection::from_role(options.role, io_service, options.address, options.game_port)};
@@ -83,7 +90,7 @@ int main(int argc, char* argv[])
         }
         // auto hash_comm{std::dynamic_pointer_cast<HashCommitment>(commitments[42])};
         // hash_comm->padding[4] ^= 0x42;
-        res = proof_prover(commitments, options, inv_aby_role);
+        res = proof_prover(commitments, options, options.inv_aby_role, options.inv_aby_address);
     }
     else
     {
@@ -94,7 +101,7 @@ int main(int argc, char* argv[])
         {
             commitments[i] = committer.recv_commitment();
         }
-        res = proof_verifier(commitments, options, inv_aby_role);
+        res = proof_verifier(commitments, options, options.inv_aby_role, options.inv_aby_address);
     }
     std::cout << "Result: " << res << std::endl;
 

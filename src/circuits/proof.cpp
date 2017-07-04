@@ -9,16 +9,18 @@
 #include "misc/time.hpp"
 
 
-bool proof_prover(std::vector<Comm_p> commitments, const Options& options, bool inv_aby_role)
+bool proof_prover(std::vector<Comm_p> commitments, const Options& options, bool inv_aby_role, const std::string& inv_aby_address)
 {
     std::cerr << print_now(true) << " ZKP start (prover)\n";
     auto aby_role{options.role};
+    auto address{options.address};
     if (inv_aby_role)
     {
         aby_role = aby_role == Role::server ? Role::client : Role::server;
+        address = inv_aby_address;
     }
     auto aby_role_e{aby_role == Role::server ? SERVER : CLIENT};
-    auto aby{std::make_shared<ABYPartyConnection>(aby_role, options.address, options.aby_port)};
+    auto aby{std::make_shared<ABYPartyConnection>(aby_role, address, options.aby_port)};
     auto circ{aby->get_circuit()};
     std::vector<share_p> comms_valid;
     comms_valid.reserve(commitments.size());
@@ -56,16 +58,18 @@ bool proof_prover(std::vector<Comm_p> commitments, const Options& options, bool 
 }
 
 
-bool proof_verifier(std::vector<Comm_p> commitments, const Options& options, bool inv_aby_role)
+bool proof_verifier(std::vector<Comm_p> commitments, const Options& options, bool inv_aby_role, const std::string& inv_aby_address)
 {
     std::cerr << print_now(true) << " ZKP start (verifier)\n";
     auto aby_role{options.role};
+    auto address{options.address};
     if (inv_aby_role)
     {
         aby_role = aby_role == Role::server ? Role::client : Role::server;
+        address = inv_aby_address;
     }
     // auto aby_role_e{aby_role == Role::server ? SERVER : CLIENT};
-    auto aby{std::make_shared<ABYPartyConnection>(aby_role, options.address, options.aby_port)};
+    auto aby{std::make_shared<ABYPartyConnection>(aby_role, address, options.aby_port)};
     auto circ{aby->get_circuit()};
     std::vector<share_p> comms_valid;
     comms_valid.reserve(commitments.size());
