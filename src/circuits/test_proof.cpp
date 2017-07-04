@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include <unistd.h>
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
 #include "proof.hpp"
@@ -62,6 +63,8 @@ int main(int argc, char* argv[])
     bool res;
     if (options.role == Role::server)
     {
+        std::cout << "Prover with PID " << ::getpid() << " (waiting for input)" << std::endl;
+        getchar();
         auto board{string_to_bits<100>(
                     "1010101000"
                     "1010101000"
@@ -84,6 +87,9 @@ int main(int argc, char* argv[])
     }
     else
     {
+        std::cout << "Verifier with PID " << ::getpid() << " (waiting for input)" << std::endl;
+        getchar();
+
         for (size_t i{0}; i < 100; ++i)
         {
             commitments[i] = committer.recv_commitment();
