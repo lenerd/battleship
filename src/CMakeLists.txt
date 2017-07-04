@@ -61,7 +61,7 @@ endif()
 set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wshadow -Weffc++")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 
 set(BATTLESHIP_SOURCES
