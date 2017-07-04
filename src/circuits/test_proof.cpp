@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <utility>
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
 #include "proof.hpp"
@@ -10,7 +11,7 @@
 namespace po = boost::program_options;
 
 
-Options parse_arguments(int argc, char* argv[])
+std::pair<Options,bool> parse_arguments(int argc, char* argv[])
 {
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -19,6 +20,7 @@ Options parse_arguments(int argc, char* argv[])
         ("address", po::value<std::string>()->default_value("127.0.0.1"), "address")
         ("game-port", po::value<uint16_t>()->default_value(6666), "game port")
         ("aby-port", po::value<uint16_t>()->default_value(6677), "aby port")
+        ("inv-aby-role", po::value<bool>()->default_value(false), "invert aby role")
     ;
     po::variables_map vm;
     try
@@ -43,12 +45,14 @@ Options parse_arguments(int argc, char* argv[])
     options.address = vm["address"].as<std::string>();
     options.game_port = vm["game-port"].as<uint16_t>();
     options.aby_port = vm["aby-port"].as<uint16_t>();
-    return options;
+    return std::make_pair(options, vm["inv-aby-role"].as<bool>());
 }
 
 int main(int argc, char* argv[])
 {
-    auto options{parse_arguments(argc, argv)};
+    auto pair{parse_arguments(argc, argv)};
+    auto options{pair.first};
+    auto inv_aby_role{pair.second};
 
     boost::asio::io_service io_service;
     auto conn{TCPConnection::from_role(options.role, io_service, options.address, options.game_port)};
@@ -76,7 +80,7 @@ int main(int argc, char* argv[])
         }
         // auto hash_comm{std::dynamic_pointer_cast<HashCommitment>(commitments[42])};
         // hash_comm->padding[4] ^= 0x42;
-        res = proof_prover(commitments, options);
+        res = proof_prover(commitments, options, inv_aby_role);
     }
     else
     {
@@ -84,7 +88,7 @@ int main(int argc, char* argv[])
         {
             commitments[i] = committer.recv_commitment();
         }
-        res = proof_verifier(commitments, options);
+        res = proof_verifier(commitments, options, inv_aby_role);
     }
     std::cout << "Result: " << res << std::endl;
 
