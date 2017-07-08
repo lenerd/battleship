@@ -205,14 +205,19 @@ void Game::handle_query_phase()
         std::cerr << "Opponent was caught cheating: " << e.what() << "\n";
     }
 
-    if (board_remote_->num_ships_hit() < 3)
-    {
-        state_ = State::answer_phase;
-    }
-    else
+    if (options_.demo && board_remote_->num_ships_hit() >= 3)
     {
         won_ = true;
         state_ = State::end;
+    }
+    else if (!options_.demo && board_remote_->num_ships_hit() >= 30)
+    {
+        won_ = true;
+        state_ = State::end;
+    }
+    else
+    {
+        state_ = State::answer_phase;
     }
 }
 
@@ -229,14 +234,20 @@ void Game::handle_answer_phase()
     // decommit
     board_local_->prove_answer(coords);
     ui_->post_message("Answer proved with commitment");
-    if (board_local_->ships_alive())
-    {
-        state_ = State::query_phase;
-    }
-    else
+
+    if (options_.demo && board_local_->num_ships_hit() >= 3)
     {
         won_ = false;
         state_ = State::end;
+    }
+    else if (!options_.demo && board_local_->num_ships_hit() >= 30)
+    {
+        won_ = false;
+        state_ = State::end;
+    }
+    else
+    {
+        state_ = State::query_phase;
     }
 }
 

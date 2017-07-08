@@ -23,6 +23,7 @@ Options parse_arguments(int argc, char* argv[])
         ("aby-port", po::value<uint16_t>()->default_value(1338), "aby port")
         ("http-port", po::value<uint16_t>()->default_value(1339), "http port")
         ("ws-port", po::value<uint16_t>()->default_value(1340), "ws port")
+        ("demo", po::value<bool>()->default_value(false), "demo mode")
     ;
     po::variables_map vm;
     try
@@ -45,6 +46,7 @@ Options parse_arguments(int argc, char* argv[])
     Options options;
     options.role = vm["role"].as<Role>();
     options.ui_type = vm["ui"].as<UIType>();
+    options.demo = vm["demo"].as<bool>();
     options.address = vm["address"].as<std::string>();
     options.game_port = vm["game-port"].as<uint16_t>();
     options.aby_port = vm["aby-port"].as<uint16_t>();

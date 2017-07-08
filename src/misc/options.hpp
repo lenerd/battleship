@@ -31,6 +31,7 @@ struct Options
 {
     Role role;
     UIType ui_type;
+    bool demo;
     // network options
     std::string address;
     uint16_t game_port;
