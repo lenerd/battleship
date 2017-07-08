@@ -91,6 +91,10 @@ function post_message(data)
     var p = document.createElement("p");
     p.appendChild(document.createTextNode(data.message));
     msg_box.appendChild(p);
+    if (msg_box.childElementCount > 5)
+    {
+        msg_box.removeChild(msg_box.firstElementChild);
+    }
 }
 
 function get_char(ship, queried)
