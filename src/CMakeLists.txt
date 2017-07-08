@@ -170,3 +170,4 @@ target_link_libraries(test_proof.exe battleship ${LIBRARIES})
 
 install(TARGETS battleship.exe DESTINATION ".")
 install(TARGETS test.exe DESTINATION ".")
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/web DESTINATION ".")
