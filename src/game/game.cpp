@@ -188,10 +188,12 @@ void Game::handle_query_phase()
     assert(state_ == State::query_phase);
     std::cerr << "state: query_phase\n";
 
-    ui_->post_message("select position");
+    ui_->post_message("Chose a target position!");
     auto coords{ui_->select_position()};
     auto answer{game_comm_.query_position(coords)};
     board_remote_->set_queried(coords, answer);
+    ui_->post_message("Queried position " + coords_to_string(coords)
+            + (answer ? ": hit" : ": miss"));
     // verify commitment
     try
     {
@@ -226,14 +228,16 @@ void Game::handle_answer_phase()
     assert(state_ == State::answer_phase);
     std::cerr << "state: answer_phase\n";
 
-    ui_->post_message("answering position");
+    ui_->post_message("Waiting for opponent's query");
     auto coords{game_comm_.answer_query([this] (coords_t coords)
         {
             return this->board_local_->query(coords);
         })};
+    ui_->post_message("Answered query for " + coords_to_string(coords)
+            + (board_local_->get(coords) ? ": hit" : ": miss"));
     // decommit
     board_local_->prove_answer(coords);
-    ui_->post_message("Answer proved with commitment");
+    ui_->post_message("Answer proven with commitment");
 
     if (options_.demo && board_local_->num_ships_hit() >= 3)
     {
@@ -258,11 +262,17 @@ void Game::handle_end()
 
     if (won_)
     {
-        ui_->post_message("You won: you destroyed all enemy ships");
+        if (options_.demo)
+            ui_->post_message("You won: you destroyed three enemy ships (demo)");
+        else
+            ui_->post_message("You won: you destroyed all enemy ships");
     }
     else
     {
-        ui_->post_message("You lost: all your ships are destroyed");
+        if (options_.demo)
+            ui_->post_message("You lost: three of your ships are destroyed (demo)");
+        else
+            ui_->post_message("You lost: all your ships are destroyed");
     }
     ui_->wait_for_quit();
 }

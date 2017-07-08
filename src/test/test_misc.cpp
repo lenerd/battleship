@@ -7,13 +7,13 @@ TEST(MiscTest, Coords2String)
 {
     coords_t c{3, 3};
     auto s{coords_to_string(c)};
-    ASSERT_EQ(s, "D:3");
+    ASSERT_EQ(s, "D3");
     c = {9,9};
     s = coords_to_string(c);
-    ASSERT_EQ(s, "J:9");
+    ASSERT_EQ(s, "J9");
     c = {0,0};
     s = coords_to_string(c);
-    ASSERT_EQ(s, "A:0");
+    ASSERT_EQ(s, "A0");
 }
 
 TEST(MiscTest, RandomBytes)

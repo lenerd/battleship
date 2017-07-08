@@ -13,7 +13,7 @@ std::string coords_to_string(coords_t s)
 {
     assert(s.first < 10 && s.second < 10);
     std::stringstream ss;
-    ss << static_cast<char>('A' + s.first) << ':' << std::to_string(s.second);
+    ss << static_cast<char>('A' + s.first) << std::to_string(s.second);
     return ss.str();
 }
 
