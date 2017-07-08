@@ -16,6 +16,12 @@ using bytes_t = std::vector<uint8_t>;
 using coords_t = std::pair<size_t, size_t>;
 
 /**
+ * Writes coordinates as a string:
+ * (3,3) |-> (D,3)
+ */
+std::string coords_to_string(coords_t s);
+
+/**
  * Generate n uniformly random bytes
  */
 bytes_t random_bytes(size_t n);

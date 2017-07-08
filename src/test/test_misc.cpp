@@ -3,6 +3,19 @@
 #include "misc/options.hpp"
 #include "misc/util.hpp"
 
+TEST(MiscTest, Coords2String)
+{
+    coords_t c{3, 3};
+    auto s{coords_to_string(c)};
+    ASSERT_EQ(s, "D:3");
+    c = {9,9};
+    s = coords_to_string(c);
+    ASSERT_EQ(s, "J:9");
+    c = {0,0};
+    s = coords_to_string(c);
+    ASSERT_EQ(s, "A:0");
+}
+
 TEST(MiscTest, RandomBytes)
 {
     bytes_t val(random_bytes(42));
