@@ -4,6 +4,7 @@
 #include <cryptopp/sha.h>
 #include <cryptopp/sha3.h>
 #include "hash_committer.hpp"
+#include "keccak.hpp"
 #include "commitment_generated.h"
 
 
@@ -118,10 +119,8 @@ bytes_t SHA1_HashCommitter::hash_function(const bytes_t &data, const bytes_t &pa
 
 bytes_t SHA3_256_HashCommitter::hash_function(const bytes_t &data, const bytes_t &padding) const
 {
-    CryptoPP::SHA3_256 sha3;
-    bytes_t digest(sha3.DigestSize());
-    sha3.Update(data.data(), data.size());
-    sha3.Update(padding.data(), padding.size());
-    sha3.Final(digest.data());
-    return digest;
+    auto sha3{SHA3_256()};
+    sha3.update(data);
+    sha3.update(padding);
+    return sha3.finalize();
 }

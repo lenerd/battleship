@@ -58,7 +58,6 @@ public:
                                 input.cbegin(),
                                 input.cend());
             return;
-            
         }
 
         auto prefix_len{rate_bytes - input_buffer.size()};
