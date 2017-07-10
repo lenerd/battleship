@@ -146,11 +146,10 @@ share_p place_ship_mask_v(CircuitW_p circ, share_grid &board, size_t length, siz
 {
     assert(0 < row && row + length - 1 < 11);
     assert(0 < col && col < 11);
-    share_p s_zero{circ->PutCONSGate(0U, 1)};
     auto ship_found{check_ship_v(circ, board, length, row, col)};
     for (size_t i{0}; i < length; ++i)
     {
-        board.at(row + i).at(col) = circ->PutMUXGate(s_zero, board.at(row + i).at(col), ship_found);
+        board.at(row + i).at(col) = circ->PutANDGate(board.at(row + i).at(col), circ->PutINVGate(ship_found));
     }
     return ship_found;
 }
@@ -159,11 +158,10 @@ share_p place_ship_mask_h(CircuitW_p circ, share_grid &board, size_t length, siz
 {
     assert(0 < row && row < 11);
     assert(0 < col && col + length - 1 < 11);
-    share_p s_zero{circ->PutCONSGate(0U, 1)};
     auto ship_found{check_ship_h(circ, board, length, row, col)};
     for (size_t i{0}; i < length; ++i)
     {
-        board.at(row).at(col + i) = circ->PutMUXGate(s_zero, board.at(row).at(col + i), ship_found);
+        board.at(row).at(col + i) = circ->PutANDGate(board.at(row).at(col + i), circ->PutINVGate(ship_found));
     }
     return ship_found;
 }
