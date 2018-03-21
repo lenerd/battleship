@@ -3,7 +3,8 @@
 	url = https://github.com/google/flatbuffers.git
 [submodule "extern/MIRACL"]
 	path = extern/MIRACL
-	url = https://github.com/lenerd/MIRACL.git
+	# url = https://github.com/lenerd/MIRACL.git
+	url = https://github.com/miracl/MIRACL.git
 [submodule "extern/json"]
 	path = extern/json
 	url = https://github.com/nlohmann/json.git
