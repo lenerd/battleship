@@ -17,9 +17,11 @@
 [submodule "extern/OTExtension"]
 	path = extern/OTExtension
 	url = https://github.com/encryptogroup/OTExtension.git
+	ignore = dirty
 [submodule "extern/ABY"]
 	path = extern/ABY
 	url = https://github.com/encryptogroup/ABY.git
+	ignore = dirty
 [submodule "extern/cryptopp-cmake"]
 	path = extern/cryptopp-cmake
 	url = https://github.com/noloader/cryptopp-cmake.git
