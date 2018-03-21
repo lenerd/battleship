@@ -10,6 +10,7 @@
 [submodule "extern/cryptopp"]
 	path = extern/cryptopp
 	url = https://github.com/weidai11/cryptopp.git
+	ignore = dirty
 [submodule "extern/Beast"]
 	path = extern/Beast
 	url = https://github.com/vinniefalco/Beast.git
@@ -19,3 +20,6 @@
 [submodule "extern/ABY"]
 	path = extern/ABY
 	url = https://github.com/encryptogroup/ABY.git
+[submodule "extern/cryptopp-cmake"]
+	path = extern/cryptopp-cmake
+	url = https://github.com/noloader/cryptopp-cmake.git
