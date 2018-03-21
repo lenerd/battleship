@@ -3,7 +3,9 @@ ExternalProject_Add(flatbuffers
     INSTALL_DIR "${Battleship_INSTALL_PREFIX}"
     CMAKE_ARGS
         -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
-        -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+        # flatc is currently only installed in Release mode
+        # https://github.com/google/flatbuffers/issues/4511
+        -DCMAKE_BUILD_TYPE:STRING=Release
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DFLATBUFFERS_BUILD_TESTS=OFF
         -DFLATBUFFERS_BUILD_FLATLIB=OFF
