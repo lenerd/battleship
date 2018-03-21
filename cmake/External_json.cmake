@@ -4,7 +4,7 @@ ExternalProject_Add(nlohmann_json
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DBuildTests=OFF
+        -DJSON_BuildTests=OFF
         -DCMAKE_CXX_COMPILER:PATH=${CMAKE_CXX_COMPILER}
         -DCMAKE_C_COMPILER:PATH=${CMAKE_C_COMPILER}
 )
