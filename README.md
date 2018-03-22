@@ -9,7 +9,7 @@ The following dependencies are referenced as Git submodules.
 * [ABY (AGPL-v3.0)](https://github.com/encryptogroup/ABY)
 	* [OTExtension (AGPL-3.0)](https://github.com/encryptogroup/OTExtension)
 	* [ENCRYPTO_utils (AGPL-3.0)](https://github.com/encryptogroup/ENCRYPTO_utils)
-	* [MIRACLS (AGPL-3.0)](https://github.com/miracl/MIRACL)
+	* [MIRACL (AGPL-3.0)](https://github.com/miracl/MIRACL)
 * [Crypto++ (BSL-1.0)](https://github.com/weidai11/cryptopp)
 	* [Crypto++ CMake (public domain)](https://github.com/noloader/cryptopp-cmake)
 * [json (MIT)](https://github.com/nlohmann/json)
