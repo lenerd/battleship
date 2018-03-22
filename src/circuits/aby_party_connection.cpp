@@ -19,13 +19,13 @@ ABYPartyConnection::ABYPartyConnection(Role role, std::string address, uint16_t 
     pImpl->party = std::make_unique<ABYParty>(
             (role == Role::server) ? SERVER : CLIENT,
             &*(pImpl->address.begin()),
+            port,
             get_sec_lvl(128), // seclvl
             32, // bitlength
             1, // threads
             MT_OT, // multiplication tripe generator
-            // 4000000, // maxgates
-            40000000, // maxgates
-            port
+            // 4000000 // maxgates
+            40000000 // maxgates
     );
 
     auto sharings{pImpl->party->GetSharings()};

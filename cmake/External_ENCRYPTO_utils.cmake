@@ -11,6 +11,7 @@ ExternalProject_Add(ENCRYPTO_utils
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_BINARY_DIR}/ENCRYPTO_utils.CMakeLists.txt"
         "<SOURCE_DIR>/CMakeLists.txt"
+    COMMAND "${PROJECT_SOURCE_DIR}/cmake/patch-ENCRYPTO_utils.sh" "<SOURCE_DIR>"
     CMAKE_ARGS
         -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
         -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}

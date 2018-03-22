@@ -45,6 +45,18 @@ if ((NOT ABY_LIBRARY) OR (NOT EXISTS ${ABY_LIBRARY}))
 else()
     message(STATUS "Found ABY: ${ABY_LIBRARY}")
 endif()
+find_library(OTEXTENSION_LIBRARY libotextension.a)
+if ((NOT OTEXTENSION_LIBRARY) OR (NOT EXISTS ${ABY_LIBRARY}))
+    message(FATAL_ERROR "OTEXTENSION not found")
+else()
+    message(STATUS "Found OTEXTENSION: ${ABY_LIBRARY}")
+endif()
+find_library(ENCRYPTO_UTILS_LIBRARY libencrypto_utils.a)
+if ((NOT ENCRYPTO_UTILS_LIBRARY) OR (NOT EXISTS ${ABY_LIBRARY}))
+    message(FATAL_ERROR "ENCRYPTO_UTILS not found")
+else()
+    message(STATUS "Found ENCRYPTO_UTILS: ${ABY_LIBRARY}")
+endif()
 find_library(MIRACL_LIBRARY libmiracl.a)
 if ((NOT MIRACL_LIBRARY) OR (NOT EXISTS ${MIRACL_LIBRARY}))
     message(FATAL_ERROR "MIRACL not found")
@@ -106,6 +118,8 @@ set(LIBRARIES
     ${CURSES_LIBRARIES}
     ${CRYPTO++_LIBRARY}
     ${ABY_LIBRARY}
+    ${OTEXTENSION_LIBRARY}
+    ${ENCRYPTO_UTILS_LIBRARY}
     ${MIRACL_CXX_LIBRARY} ${MIRACL_LIBRARY}
     ${GMP_LIBRARY} ${GMPXX_LIBRARY}
     Threads::Threads
